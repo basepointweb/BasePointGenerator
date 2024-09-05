@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+  <Include href="KnownImageIds.vsct" />
+  <Include href="VSGlobals.vsct" />
+
+  <Commands package="BasePointGenerator">
+    <Groups>
+      <Group guid="BasePointGenerator" id="MyMenuGroup" priority="0x0600">
+			<Parent guid="VSMainMenu" id="ItemNode" />			
+      </Group>
+
+		<Group guid="BasePointGenerator" id="EditorContextMenuGroup" priority="0x0500">
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+		</Group>
+    </Groups>
+
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <Button guid="BasePointGenerator" id="SolutonItemContextMenuCommand" priority="0x0100" type="Button">
+        <Parent guid="BasePointGenerator" id="MyMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="StatusInformation" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Generate BasePoint code</ButtonText>
+          <LocCanonicalName>.BasePointGenerator.SolutonItemContextMenuCommand</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="guidBasePointGeneratorPackageCmdSet" id="cmdidfrmCodeGenerationOptionsCommand" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
+		  <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <ButtonText>Generate BasePoint code</ButtonText>
+        </Strings>
+      </Button>
+
+		<Button guid="BasePointGenerator" id="FileEditorContextMenuCommand" priority="0x0100" type="Button">
+			<Parent guid="BasePointGenerator" id="EditorContextMenuGroup" />			
+			<Icon guid="ImageCatalogGuid" id="StatusInformation" />
+			<CommandFlag>IconIsMoniker</CommandFlag>
+			<Strings>
+				<ButtonText>Generate BasePoint code</ButtonText>
+				<LocCanonicalName>.BasePointGenerator.FileEditorContextMenuCommand</LocCanonicalName>
+			</Strings>
+		</Button>
+    </Buttons>
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\frmCodeGenerationOptionsCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="BasePointGenerator" value="{3a9553da-51e5-4df4-bb92-f7da402cc6ed}">
+      <IDSymbol name="MyMenuGroup" value="0x0001" />
+      <IDSymbol name="SolutonItemContextMenuCommand" value="0x0100" />
+	    <IDSymbol name="EditorContextMenuGroup" value="0x0101" />
+		<IDSymbol name="FileEditorContextMenuCommand" value="0x0102" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{da2ba8c3-d21a-41e6-b2dd-fe079d5cbaf8}" name="guidBasePointGeneratorPackageCmdSet">
+      <IDSymbol value="256" name="cmdidfrmCodeGenerationOptionsCommand" />
+    </GuidSymbol> 
+
+	  <GuidSymbol value="{3bc7f790-9200-40f6-9d42-6f96023499af}" name="guidImages">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
