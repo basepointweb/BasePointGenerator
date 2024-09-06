@@ -31,7 +31,7 @@ namespace BasePointGenerator.Services
         public string DapperListItemOutputQueryProviderPath { get; private set; }
         public string InterfaceQueryProviderPath { get; private set; }
         public string InterfaceListItemOutputQueryProviderPath { get; private set; }
-        public string CommonConstantsPath { get; private set; }
+        public string SharedConstantsPath { get; private set; }
         public string PostmanCollectionPath { get; private set; }
         public string DapperServiceCollectionExtentionsPath { get; private set; }
         public string ApplicationServiceCollectionExtentionsPath { get; private set; }
@@ -69,7 +69,7 @@ namespace BasePointGenerator.Services
             DapperListItemOutputQueryProviderPath = GetDapperListItemOutputQueryProviderPath();
             InterfaceQueryProviderPath = GetInterfaceQueryProviderPath();
             InterfaceListItemOutputQueryProviderPath = GetInterfaceListItemOutputQueryProviderPath();
-            CommonConstantsPath = GetCommonConstantsPath();
+            SharedConstantsPath = GetSharedConstantsPath();
             PostmanCollectionPath = GetPostmanCollectionPath();
             DapperServiceCollectionExtentionsPath = GetDapperServiceCollectionExtentionsPath();
             ApplicationServiceCollectionExtentionsPath = GetApplicationServiceCollectionExtentionsPath();
@@ -117,15 +117,15 @@ namespace BasePointGenerator.Services
             return string.Concat(solutionPath, "Postman");
         }
 
-        private string GetCommonConstantsPath()
+        private string GetSharedConstantsPath()
         {
             var presentationProject = _solutionItens.Solution.Children.ToList().Where(c => c.Name.EndsWith(".Core"))
                 .FirstOrDefault();
 
-            var commonFolder = presentationProject?.Children.Where(n => n.Text.Equals("Common"))
+            var sharedFolder = presentationProject?.Children.Where(n => n.Text.Equals("Shared"))
                 .FirstOrDefault();
 
-            return (commonFolder is not null) ? commonFolder.FullPath : string.Empty;
+            return (sharedFolder is not null) ? sharedFolder.FullPath : string.Empty;
         }
 
         private string GetInterfaceQueryProviderPath()

@@ -38,7 +38,7 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.Application.UseCases;");
             content.AppendLine("using BasePoint.Core.Exceptions;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -85,7 +85,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<{className}Output>> InternalExecuteAsync(Guid {className.GetWordWithFirstLetterDown()}Id)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()}Output = await _{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.GetById({className.GetWordWithFirstLetterDown()}Id) ??");
-            content.AppendLine($"\t\t\t\tthrow new ResourceNotFoundException(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
+            content.AppendLine($"\t\t\t\tthrow new ResourceNotFoundException(SharedConstants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
             content.AppendLine("");
             content.AppendLine($"\t\t\t return CreateSuccessOutput({className.GetWordWithFirstLetterDown()}Output);");
             content.AppendLine("\t\t}");

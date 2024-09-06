@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace BasePointGenerator
 {
-    public static class CommonConstantsFactory
+    public static class SharedConstantsFactory
     {
         public static string Create(
             string fileContent,
@@ -28,7 +28,7 @@ namespace BasePointGenerator
 
         private static string CreateConstants(string fileContent, string originalClassName, IList<PropertyInfo> properties, IList<MethodInfo> methods, string filePath, FileContentGenerationOptions options)
         {
-            var constantsFile = Path.Combine(filePath, "Constants.cs");
+            var constantsFile = Path.Combine(filePath, "SharedConstants.cs");
 
             if (!File.Exists(constantsFile))
                 return string.Empty;

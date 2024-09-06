@@ -34,7 +34,7 @@ namespace BasePointGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
@@ -42,7 +42,7 @@ namespace BasePointGenerator
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -110,7 +110,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
-            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(id)));");
+            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(SharedConstants.ErrorMessages.{className}WithIdDoesNotExists.Format(id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(id), Times.Once);");
             content.AppendLine("\t\t}");
         }

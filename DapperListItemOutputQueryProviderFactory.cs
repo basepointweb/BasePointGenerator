@@ -36,7 +36,7 @@ namespace BasePointGenerator
 
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.QueryProviders;");
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.Extensions;");
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Application.Cqrs;");
             content.AppendLine($"using BasePoint.Core.Application.Dtos.Input;");
             content.AppendLine("using Dapper;");
@@ -89,7 +89,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<int> Count(IList<SearchFilterInput> filters)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar sqlCommand = SqlCountSelectCommand");
-            content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter;");
+            content.AppendLine($"\t\t\t\t + Constants.StringEnter;");
             content.AppendLine();
             content.AppendLine($"\t\t\tDictionary<string, object> parameters;");
             content.AppendLine($"\t\t\tstring sqlFilters;");
@@ -106,7 +106,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<IList<{originalClassName}ListItemOutput>> GetPaginatedResults(IList<SearchFilterInput> filters, int pageNumber, int itemsPerPage)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar sqlCommand = SqlSelectCommand");
-            content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter;");
+            content.AppendLine($"\t\t\t\t + Constants.StringEnter;");
             content.AppendLine();
             content.AppendLine($"\t\t\tDictionary<string, object> parameters;");
             content.AppendLine($"\t\t\tstring sqlFilters;");

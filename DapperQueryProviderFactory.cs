@@ -36,7 +36,7 @@ namespace BasePointGenerator
 
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.QueryProviders;");
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.Extensions;");
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Application.Cqrs;");
             content.AppendLine($"using BasePoint.Core.Application.Dtos.Input;");
             content.AppendLine("using Dapper;");
@@ -88,8 +88,8 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<{originalClassName}Output> GetById(Guid id)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar sqlCommand = SqlSelectCommand");
-            content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
-            content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+            content.AppendLine($"\t\t\t\t + Constants.StringEnter");
+            content.AppendLine($"\t\t\t\t + \"Where\" + Constants.StringEnter");
             content.AppendLine($"\t\t\t\t + \"t.Id = @Id;\";");
             content.AppendLine();
             content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");

@@ -36,7 +36,7 @@ namespace BasePointGenerator
 
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using FluentValidation;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -77,7 +77,7 @@ namespace BasePointGenerator
 
                 content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");
-                content.AppendLine($"\t\t\t\t.WithMessage(v => Constants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
+                content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
 
                 validationsAdded++;
             }

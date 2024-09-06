@@ -34,7 +34,7 @@ namespace BasePointGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
@@ -45,7 +45,7 @@ namespace BasePointGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine($"using FluentValidation;");
 
@@ -122,7 +122,7 @@ namespace BasePointGenerator
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
             content.AppendLine("\t\t\toutput.OutputObject.Should().BeNull();");
-            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id)));");
+            content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(SharedConstants.ErrorMessages.{className}WithIdDoesNotExists.Format(input.Id)));");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
             content.AppendLine("\t\t}");
 
@@ -156,7 +156,7 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
                 content.AppendLine("");
                 content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
-                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.Another{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
+                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(SharedConstants.ErrorMessages.Another{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
                 content.AppendLine("\t\t}");
 
                 testsMethodsAdded++;

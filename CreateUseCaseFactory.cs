@@ -39,7 +39,7 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using BasePoint.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
@@ -95,7 +95,7 @@ namespace BasePointGenerator
             foreach (var property in propertiesToPreventDuplication)
             {
                 content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Get{className}By{property.Name}(input.{property.Name}).Result");
-                content.AppendLine($"\t\t\t\t.ThrowInvalidInputIfIsNotNull(Constants.ErrorMessages.A{className}With{property.Name}AlreadyExists.Format(input.{property.Name}));");
+                content.AppendLine($"\t\t\t\t.ThrowInvalidInputIfIsNotNull(SharedConstants.ErrorMessages.A{className}With{property.Name}AlreadyExists.Format(input.{property.Name}));");
                 content.AppendLine("");
             }
 

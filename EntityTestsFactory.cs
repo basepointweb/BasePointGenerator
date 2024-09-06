@@ -34,7 +34,7 @@ namespace BasePointGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Moq;");

@@ -168,7 +168,7 @@ namespace BasePointGenerator.Services
 
             if (generateCreateUseCase || generateUpdateUseCase || generateGetUseCase)
             {
-                Generatefile("Constants.cs", _filesPathGeneratorService.CommonConstantsPath, CommonConstantsFactory.Create, options);
+                Generatefile("SharedConstants.cs", _filesPathGeneratorService.SharedConstantsPath, SharedConstantsFactory.Create, options);
 
                 Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.ApplicationServiceCollectionExtentionsPath, ApplicationServiceCollectionExtentionFactory.Create, options);
                 Generatefile(PostmanCollectionFactory.GetCollectionFileName(), _filesPathGeneratorService.PostmanCollectionPath, PostmanCollectionFactory.Create, options);
@@ -271,7 +271,7 @@ namespace BasePointGenerator.Services
                     System.IO.File.WriteAllText(generatedFile, contentFile);
             }
 
-            if (!newFileName.Equals("Constants.cs") && !newFileName.Contains("postman_collection") && !newFileName.Contains("ServiceCollectionExtentions.cs"))
+            if (!newFileName.Equals("SharedConstants.cs") && !newFileName.Contains("postman_collection") && !newFileName.Contains("ServiceCollectionExtentions.cs"))
                 GeneratedFiles.Add(generatedFile);
         }
 

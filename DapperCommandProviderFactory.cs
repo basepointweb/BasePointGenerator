@@ -36,7 +36,7 @@ namespace BasePointGenerator
 
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.CommandProviders;");
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.Extensions;");
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Domain.Cqrs;");
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
@@ -103,8 +103,8 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
-                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
-                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + Constants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + Constants.StringEnter");
                 content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name};\";");
                 content.AppendLine();
                 content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
@@ -117,8 +117,8 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\tpublic async Task<{originalClassName}> GetAnother{originalClassName}By{property.Name}({originalClassName} {originalClassName.GetWordWithFirstLetterDown()}, {property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
-                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
-                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + Constants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + Constants.StringEnter");
                 content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name} and t.Id <> @Id\";");
                 content.AppendLine();
                 content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
@@ -149,8 +149,8 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\tpublic async Task<{originalClassName}> Get{originalClassName}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
-                content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
-                content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+                content.AppendLine($"\t\t\t\t + Constants.StringEnter");
+                content.AppendLine($"\t\t\t\t + \"Where\" + Constants.StringEnter");
                 content.AppendLine($"\t\t\t\t + \"t.{property.Name} = @{property.Name};\";");
                 content.AppendLine();
                 content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");
@@ -187,8 +187,8 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<{originalClassName}> GetById(Guid id)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar sql = SqlSelectCommand");
-            content.AppendLine($"\t\t\t\t + CommonConstants.StringEnter");
-            content.AppendLine($"\t\t\t\t + \"Where\" + CommonConstants.StringEnter");
+            content.AppendLine($"\t\t\t\t + Constants.StringEnter");
+            content.AppendLine($"\t\t\t\t + \"Where\" + Constants.StringEnter");
             content.AppendLine($"\t\t\t\t + \"t.Id = @Id;\";");
             content.AppendLine();
             content.AppendLine($"\t\t\tvar parameters = new DynamicParameters();");

@@ -34,7 +34,7 @@ namespace BasePointGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");

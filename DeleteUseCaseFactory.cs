@@ -38,7 +38,7 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.Application.UseCases;");
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -84,7 +84,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic override async Task<UseCaseOutput<bool>> InternalExecuteAsync(Guid {className.GetWordWithFirstLetterDown()}Id)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar previous{className} = _{className.GetWordWithFirstLetterDown()}Repository.GetById({className.GetWordWithFirstLetterDown()}Id).Result");
-            content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(Constants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
+            content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(SharedConstants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
             content.AppendLine("");
             content.AppendLine($"\t\t\tprevious{className}.SetStateAsDeleted();");
             content.AppendLine("");

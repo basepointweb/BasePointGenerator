@@ -34,7 +34,7 @@ namespace BasePointGenerator
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine("using BasePoint.Core.Common;");
+            content.AppendLine("using BasePoint.Core.Shared;");
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using FluentAssertions;");
@@ -45,7 +45,7 @@ namespace BasePointGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Common;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using FluentValidation;");
 
             content.AppendLine("");
@@ -137,7 +137,7 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
                 content.AppendLine("");
                 content.AppendLine("\t\t\toutput.HasErros.Should().BeTrue();");
-                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(Constants.ErrorMessages.A{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
+                content.AppendLine($"\t\t\toutput.Errors.Should().ContainEquivalentOf(new ErrorMessage(SharedConstants.ErrorMessages.A{className}With{property.Name}AlreadyExists.Format(input.{property.Name})));");
                 content.AppendLine("\t\t}");
 
                 testsMethodsAdded++;
