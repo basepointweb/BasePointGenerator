@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -116,7 +116,16 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
-                content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
+
+                if (property.Type == "Guid")
+                {
+                    content.AppendLine($"\t\t\t\t.With{property.Name}(Guid.Empty)");
+                }
+                else
+                {
+                    content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
+                }
+
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");

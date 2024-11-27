@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -32,6 +32,9 @@ namespace BasePointGenerator
         {
             var content = new StringBuilder();
 
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine("");
+
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine(GetNameSpace(filePath));
@@ -46,11 +49,35 @@ namespace BasePointGenerator
 
             GeneratePublicVariables(content, properties);
 
+            GenerateConstructor(content, newClassName, originalClassName, properties);
+
             content.AppendLine("\t}");
 
             content.AppendLine("}");
 
             return content.ToString();
+        }
+
+        private static void GenerateConstructor(StringBuilder content, string newClassName, string originalClassName, IList<PropertyInfo> properties)
+        {
+            content.AppendLine($"\t\tprotected {newClassName}()");
+            content.AppendLine("\t\t{");
+            content.AppendLine("\t\t}");
+            content.AppendLine("");
+
+            content.AppendLine($"\t\tpublic {newClassName}({originalClassName} {originalClassName.GetWordWithFirstLetterDown()}) : this()");
+            content.AppendLine("\t\t{");
+
+            if (!properties.Any(p => p.Name.Equals("Id")))
+            {
+                content.AppendLine(string.Concat($"\t\t\tId = ", $"{originalClassName.GetWordWithFirstLetterDown()}.Id;"));
+            }
+
+            foreach (var item in properties)
+            {
+                content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name};"));
+            }
+            content.AppendLine("\t\t}");
         }
 
         private static void Validate(string fileContent)
@@ -63,7 +90,7 @@ namespace BasePointGenerator
         {
             if (!properties.Any(p => p.Name.Equals("Id")))
             {
-                content.AppendLine(string.Concat($"\t\tpublic Guid Id", " { get; set; }"));
+                content.AppendLine(string.Concat($"\t\tpublic Guid Id", " { get; init; }"));
             }
 
             foreach (var item in properties)

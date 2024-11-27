@@ -1,8 +1,9 @@
-﻿using BasePointGenerator.Dtos;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using BasePointGenerator.Dtos;
 
 namespace BasePointGenerator.Services
 {
@@ -140,6 +141,8 @@ namespace BasePointGenerator.Services
 
             Generatefile(newFileName, _filesPathGeneratorService.MigratonsPath, MigrationCreateTableFactory.Create, options);
 
+            AddScriptAsEmbebededResource(Path.Combine(@"Migrations\SctructuralScripts", newFileName), SolutionItens.DapperProject.FullPath);
+
             Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.DapperServiceCollectionExtentionsPath, DapperServiceCollectionExtentionsFactory.Create, options);
 
             if (generateCreateUseCase)
@@ -173,6 +176,32 @@ namespace BasePointGenerator.Services
                 Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.ApplicationServiceCollectionExtentionsPath, ApplicationServiceCollectionExtentionFactory.Create, options);
                 Generatefile(PostmanCollectionFactory.GetCollectionFileName(), _filesPathGeneratorService.PostmanCollectionPath, PostmanCollectionFactory.Create, options);
             }
+        }
+
+        private void AddScriptAsEmbebededResource(string newFileName, string migrationsProjectPath)
+        {
+            // Carregar o arquivo .csproj como XML
+            XElement csprojXml = XElement.Load(migrationsProjectPath);
+
+            // Procurar a seção ItemGroup
+            var itemGroup = csprojXml.Element("ItemGroup");
+
+            if (itemGroup == null)
+            {
+                itemGroup = new XElement("ItemGroup");
+                csprojXml.Add(itemGroup);
+            }
+
+            // Criar o elemento para o EmbeddedResource
+            XElement embeddedResource = new XElement("EmbeddedResource",
+                new XAttribute("Include", newFileName)
+            );
+
+            // Adicionar o elemento à seção ItemGroup
+            itemGroup.Add(embeddedResource);
+
+            // Salvar as alterações no arquivo .csproj
+            csprojXml.Save(migrationsProjectPath);
         }
 
         private void GenerateGetUseCase(FileContentGenerationOptions options)

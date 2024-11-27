@@ -72,6 +72,12 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\tColumnDefinitions = new List<DapperTableColumnDefinition>()");
             content.AppendLine("\t\t\t{");
 
+            content.AppendLine("\t\t\t\tnew DapperTableColumnDefinition");
+            content.AppendLine("\t\t\t\t{");
+            content.AppendLine($"\t\t\t\t\tDbFieldName = \"Id\",");
+            content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.Id),");
+            content.AppendLine($"\t\t\t\t\tType = DbType.Guid");
+            content.AppendLine("\t\t\t\t},");
 
             foreach (var item in properties)
             {

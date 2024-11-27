@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -86,6 +86,9 @@ namespace BasePointGenerator
 
         private static void GenerateMethodsToGetEntity(StringBuilder content, string originalClassName, string className, IList<PropertyInfo> properties)
         {
+            var firstProperty = properties.FirstOrDefault(x => x.Name.ToUpper() != "ID") ??
+                properties.First();
+
             content.AppendLine($"\t\tpublic override async Task<int> Count(IList<SearchFilterInput> filters)");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar sqlCommand = SqlCountSelectCommand");
@@ -114,7 +117,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\tCreateParameters(filters, out parameters, out sqlFilters);");
             content.AppendLine();
             content.AppendLine($"\t\t\tsqlCommand += \" WHERE \" + sqlFilters +");
-            content.AppendLine($"\t\t\t\t\t\" ORDER BY NAME LIMIT @PAGE_NUMBER, @ITENS_PER_PAGE \";");
+            content.AppendLine($"\t\t\t\t\t\" ORDER BY {firstProperty.Name.ToUpper()} LIMIT @PAGE_NUMBER, @ITENS_PER_PAGE \";");
             content.AppendLine();
             content.AppendLine($"\t\t\tparameters.Add(\"PAGE_NUMBER\", (pageNumber - 1) * itemsPerPage);");
             content.AppendLine($"\t\t\tparameters.Add(\"ITENS_PER_PAGE\", itemsPerPage);");
@@ -133,14 +136,20 @@ namespace BasePointGenerator
             content.AppendLine("\t\t\t{");
             content.AppendLine("\t\t\t\tif (filter.FilterValue is not null)");
             content.AppendLine("\t\t\t\t{");
-            content.AppendLine("\t\t\t\t\tif (string.IsNullOrWhiteSpace(sqlFilters))");
+            content.AppendLine("\t\t\t\t\tif (!string.IsNullOrWhiteSpace(sqlFilters))");
             content.AppendLine("\t\t\t\t\t\tsqlFilters += \" AND \";");
             content.AppendLine();
             content.AppendLine("\t\t\t\t\tsqlFilters += filter.GetSqlFilter();");
             content.AppendLine();
             content.AppendLine("\t\t\t\t\tvar filterParameters = filter.GetParameters();");
             content.AppendLine();
-            content.AppendLine("\t\t\t\t\tparameters.ToList().ForEach(x => filterParameters.Add(x.Key, x.Value));");
+
+            content.AppendLine("\t\t\t\t\tforeach (var param in filterParameters)");
+            content.AppendLine("\t\t\t\t\t{");
+            content.AppendLine("\t\t\t\t\t    parameters.Add(param.Key, param.Value);");
+            content.AppendLine("\t\t\t\t\t}");
+            content.AppendLine();
+
             content.AppendLine("\t\t\t\t}");
             content.AppendLine("\t\t\t}");
             content.AppendLine("\t\t}");
@@ -152,9 +161,16 @@ namespace BasePointGenerator
 
             int propertyIndex = 0;
 
-            foreach (var property in properties)
+            var propertiesToGenerateSelectedFields = new List<PropertyInfo>();
+
+            if (!properties.Any(x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)))
+                propertiesToGenerateSelectedFields.Add(new PropertyInfo("Guid", "Id"));
+
+            propertiesToGenerateSelectedFields.AddRange(properties);
+
+            foreach (var property in propertiesToGenerateSelectedFields)
             {
-                var separator = (propertyIndex != properties.Count - 1) && (properties.Count > 1) ? "," : string.Empty;
+                var separator = (propertyIndex != propertiesToGenerateSelectedFields.Count - 1) && (propertiesToGenerateSelectedFields.Count > 1) ? "," : string.Empty;
 
                 content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t t.{property.Name}" + separator);
 
@@ -165,7 +181,7 @@ namespace BasePointGenerator
             content.AppendLine();
             content.AppendLine($"\t\tprivate readonly string SqlCountSelectCommand = @\"SELECT");
             content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t Count(t.Id) as Count");
-            content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t FROM {originalClassName} t;\";");
+            content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t FROM {originalClassName} t\";");
         }
 
         private static string GetNameSpace(string filePath)
@@ -192,11 +208,6 @@ namespace BasePointGenerator
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

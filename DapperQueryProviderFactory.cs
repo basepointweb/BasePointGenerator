@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -41,7 +41,6 @@ namespace BasePointGenerator
             content.AppendLine($"using BasePoint.Core.Application.Dtos.Input;");
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
-            content.AppendLine("using MySql.Data.MySqlClient;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
 
@@ -106,9 +105,16 @@ namespace BasePointGenerator
 
             int propertyIndex = 0;
 
-            foreach (var property in properties)
+            var propertiesToGenerateSelectedFields = new List<PropertyInfo>();
+
+            if (!properties.Any(x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)))
+                propertiesToGenerateSelectedFields.Add(new PropertyInfo("Guid", "Id"));
+
+            propertiesToGenerateSelectedFields.AddRange(properties);
+
+            foreach (var property in propertiesToGenerateSelectedFields)
             {
-                var separator = (propertyIndex != properties.Count - 1) && (properties.Count > 1) ? "," : string.Empty;
+                var separator = (propertyIndex != propertiesToGenerateSelectedFields.Count - 1) && (propertiesToGenerateSelectedFields.Count > 1) ? "," : string.Empty;
 
                 content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t t.{property.Name}" + separator);
 

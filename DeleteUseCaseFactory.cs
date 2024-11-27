@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -87,6 +87,8 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(SharedConstants.ErrorMessages.{className}WithIdDoesNotExists.Format({className.GetWordWithFirstLetterDown()}Id));");
             content.AppendLine("");
             content.AppendLine($"\t\t\tprevious{className}.SetStateAsDeleted();");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Persist(previous{className}, UnitOfWork);");
             content.AppendLine("");
             content.AppendLine($"\t\t\t await SaveChangesAsync();");
             content.AppendLine("");

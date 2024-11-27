@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -101,10 +101,20 @@ namespace BasePointGenerator
 
             content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}();");
             content.AppendLine("");
+
+            foreach (var item in properties)
+            {
+                content.AppendLine(string.Concat($"\t\t\t{className.GetWordWithFirstLetterDown()}.{item.Name} = ", $"input.{item.Name};"));
+            }
+
+            content.AppendLine("");
+
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Persist({className.GetWordWithFirstLetterDown()}, UnitOfWork);");
+            content.AppendLine("");
             content.AppendLine($"\t\t\t await SaveChangesAsync();");
             content.AppendLine("");
-            content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output());");
+            content.AppendLine($"\t\t\t return CreateSuccessOutput(new {className}Output({className.GetWordWithFirstLetterDown()}));");
+
             content.AppendLine("\t\t}");
         }
 

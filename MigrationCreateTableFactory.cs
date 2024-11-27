@@ -55,7 +55,7 @@ namespace BasePointGenerator
 
             foreach (var property in preventDuplicationProperties)
             {
-                content.AppendLine($"  UNIQUE KEY `{originalClassName}{property.Name}_UNIQUE` (`{property.Type}`),");
+                content.AppendLine($"  UNIQUE KEY `{originalClassName}{property.Name}_UNIQUE` (`{property.Name}`),");
             }
 
             var nestedProperties = propertiesToGenerateTableFields.Where(x => !x.IsPrimitive())

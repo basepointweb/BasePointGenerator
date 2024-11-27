@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -35,6 +35,7 @@ namespace BasePointGenerator
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -46,11 +47,11 @@ namespace BasePointGenerator
 
             content.AppendLine("\t{");
 
-            GeneratePrivateVariables(content, properties);
+            GeneratePrivateVariables(content, originalClassName, properties);
 
             GenerateBuilderConstructor(content, newClassName);
 
-            GenerateMethodsToSetValues(content, newClassName, properties);
+            GenerateMethodsToSetValues(content, originalClassName, newClassName, properties);
 
             GenerateMethodBuild(content, originalClassName, properties);
 
@@ -71,27 +72,7 @@ namespace BasePointGenerator
         {
             content.AppendLine($"\t\tpublic {originalClassName}Output Build()");
             content.AppendLine("\t\t{");
-            content.AppendLine($"\t\t\treturn new {originalClassName}Output");
-            content.AppendLine("\t\t\t{");
-
-            var propertiesToAdd = new List<PropertyInfo>();
-            propertiesToAdd.AddRange(properties);
-
-            if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
-            {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
-            }
-
-            for (int i = 0; i < propertiesToAdd.Count; i++)
-            {
-                var setValue = $"\t\t\t\t{propertiesToAdd[i].Name} = _{propertiesToAdd[i].Name.GetWordWithFirstLetterDown()}";
-                if (i + 1 != propertiesToAdd.Count)
-                    setValue = string.Concat(setValue, ",");
-
-                content.AppendLine(setValue);
-            }
-
-            content.AppendLine("\t\t\t};");
+            content.AppendLine($"\t\t\treturn new {originalClassName}Output(_{originalClassName.GetWordWithFirstLetterDown()});");
             content.AppendLine("\t\t}");
         }
 
@@ -102,41 +83,22 @@ namespace BasePointGenerator
             content.AppendLine();
         }
 
-        private static void GenerateMethodsToSetValues(StringBuilder content, string className, IList<PropertyInfo> properties)
+        private static void GenerateMethodsToSetValues(StringBuilder content, string originalClassName, string className, IList<PropertyInfo> properties)
         {
             if (!properties.Any(p => p.Name.Equals("Id")))
             {
-                content.AppendLine($"\t\tpublic {className} WithId(Guid id)");
+                content.AppendLine($"\t\tpublic {className} With{originalClassName}({originalClassName} {originalClassName.GetWordWithFirstLetterDown()})");
                 content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t_id = id;");
-                content.AppendLine("\t\t\treturn this;");
-                content.AppendLine("\t\t}");
-                content.AppendLine();
-            }
-
-            foreach (var item in properties)
-            {
-                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("", "Output")} {item.Name.GetWordWithFirstLetterDown()})");
-                content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
+                content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()} = {originalClassName.GetWordWithFirstLetterDown()};");
                 content.AppendLine("\t\t\treturn this;");
                 content.AppendLine("\t\t}");
                 content.AppendLine();
             }
         }
 
-        private static void GeneratePrivateVariables(StringBuilder content, IList<PropertyInfo> properties)
+        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
         {
-
-            if (!properties.Any(p => p.Name.Equals("Id")))
-            {
-                content.AppendLine($"\t\tprivate Guid _id;");
-            }
-
-            foreach (var item in properties)
-            {
-                content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("", "Output")} _{item.Name.GetWordWithFirstLetterDown()};");
-            }
+            content.AppendLine($"\t\tprivate {originalClassName} _{originalClassName.GetWordWithFirstLetterDown()};");
         }
 
         private static string GetNameSpace(string filePath)
