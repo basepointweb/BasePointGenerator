@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -42,6 +42,8 @@ namespace BasePointGenerator
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.UseCases;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
@@ -93,6 +95,18 @@ namespace BasePointGenerator
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar id = Guid.NewGuid();");
             content.AppendLine("");
+            content.AppendLine($"\t\t\tvar previous{className} = new {className}Builder()");
+            content.AppendLine($"\t\t\t\t.Build();");
+            content.AppendLine("");
+
+            content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
+            content.AppendLine("");
+
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(id))");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(previous{className});");
+            content.AppendLine("");
+
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");

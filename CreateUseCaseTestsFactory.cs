@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -47,6 +47,7 @@ namespace BasePointGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using FluentValidation;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -95,6 +96,10 @@ namespace BasePointGenerator
         {
             var firstProperty = properties.First();
 
+            var propertiesToPreventDuplication = properties
+              .Where(p => p.PreventDuplication && !p.IsListProperty())
+              .ToList();
+
             content.AppendLine("\t\t[Fact]");
             content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
             content.AppendLine("\t\t{");
@@ -102,19 +107,36 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
+            content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
+            content.AppendLine("");
+
+            int testsMethodsAdded = 0;
+
+            foreach (var property in propertiesToPreventDuplication)
+            {
+                if (testsMethodsAdded > 0)
+                    content.AppendLine();
+
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.Get{className}By{property.Name}(input.{property.Name}))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync(null as {className});");
+
+                testsMethodsAdded++;
+
+                content.AppendLine();
+            }
+
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
             content.AppendLine("\t\t}");
 
-            var propertiesToPreventDuplication = properties
-                .Where(p => p.PreventDuplication && !p.IsListProperty())
-                .ToList();
+
 
             if (propertiesToPreventDuplication.Count > 0)
                 content.AppendLine();
 
-            int testsMethodsAdded = 0;
+            testsMethodsAdded = 0;
 
             foreach (var property in propertiesToPreventDuplication)
             {

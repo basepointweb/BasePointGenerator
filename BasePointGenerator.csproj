@@ -45,8 +45,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationSettings\AppSettingsDto.cs" />
     <Compile Include="Commands\FileEditorContextMenuCommand.cs" />
     <Compile Include="ApplicationServiceCollectionExtentionFactory.cs" />
+    <Compile Include="ConfigurationSettings\AppConfigurationSettings.cs" />
+    <Compile Include="ConfigurationSettings\LoggingSettingsDto.cs" />
+    <Compile Include="ConfigurationSettings\LogLevelDto.cs" />
     <Compile Include="DapperListItemOutputQueryProviderFactory.cs" />
     <Compile Include="DapperServiceCollectionExtentionsFactory.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemEventScriptPackage.cs" />

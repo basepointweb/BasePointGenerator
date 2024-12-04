@@ -36,6 +36,7 @@ namespace BasePointGenerator
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -49,7 +50,7 @@ namespace BasePointGenerator
 
             GeneratePrivateVariables(content, originalClassName, properties);
 
-            GenerateBuilderConstructor(content, newClassName);
+            GenerateBuilderConstructor(content, originalClassName, newClassName);
 
             GenerateMethodsToSetValues(content, originalClassName, newClassName, properties);
 
@@ -76,10 +77,13 @@ namespace BasePointGenerator
             content.AppendLine("\t\t}");
         }
 
-        private static void GenerateBuilderConstructor(StringBuilder content, string newClassName)
+        private static void GenerateBuilderConstructor(StringBuilder content, string originalClassName, string newClassName)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}()" + " { }");
+            content.AppendLine($"\t\tpublic {newClassName}()");
+            content.AppendLine("\t{");
+            content.AppendLine($"\t\t _{originalClassName.GetWordWithFirstLetterDown()} = new {originalClassName}Builder().Build();");
+            content.AppendLine("\t}");
             content.AppendLine();
         }
 

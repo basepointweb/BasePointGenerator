@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using BasePointGenerator.ConfigurationSettings;
 using BasePointGenerator.Dtos;
+using Newtonsoft.Json;
 
 namespace BasePointGenerator.Services
 {
@@ -136,12 +138,15 @@ namespace BasePointGenerator.Services
 
             string[] files = Directory.GetFiles(_filesPathGeneratorService.MigratonsPath, partialScriptName);
 
-            if (files.Any())
+            var scriptAlreadyExists = files.Any();
+
+            if (scriptAlreadyExists)
                 newFileName = files[0];
 
             Generatefile(newFileName, _filesPathGeneratorService.MigratonsPath, MigrationCreateTableFactory.Create, options);
 
-            AddScriptAsEmbebededResource(Path.Combine(@"Migrations\SctructuralScripts", newFileName), SolutionItens.DapperProject.FullPath);
+            if (!scriptAlreadyExists)
+                AddScriptAsEmbebededResource(Path.Combine(@"Migrations\SctructuralScripts", newFileName), SolutionItens.DapperProject.FullPath);
 
             Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.DapperServiceCollectionExtentionsPath, DapperServiceCollectionExtentionsFactory.Create, options);
 
@@ -176,6 +181,42 @@ namespace BasePointGenerator.Services
                 Generatefile("ServiceCollectionExtentions.cs", _filesPathGeneratorService.ApplicationServiceCollectionExtentionsPath, ApplicationServiceCollectionExtentionFactory.Create, options);
                 Generatefile(PostmanCollectionFactory.GetCollectionFileName(), _filesPathGeneratorService.PostmanCollectionPath, PostmanCollectionFactory.Create, options);
             }
+
+            AddAppSetings(_filesPathGeneratorService.AppSettingsPath);
+        }
+
+        private static string GetNameRootProjectName()
+        {
+            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
+
+            return solution.Name.Replace(".sln", "");
+        }
+
+        private void AddAppSetings(string appSettingsPath)
+        {
+            var appSettingsJson = System.IO.File.ReadAllText(appSettingsPath);
+
+            var appConfigurationSettings = JsonConvert.DeserializeObject<AppConfigurationSettings>(appSettingsJson);
+
+            appConfigurationSettings.AppSettings.DatabaseServerName = "127.0.0.1";
+            appConfigurationSettings.AppSettings.DatabaseUser = "root";
+            appConfigurationSettings.AppSettings.DatabasePassword = "123456";
+            appConfigurationSettings.AppSettings.DatabaseName = GetNameRootProjectName();
+            appConfigurationSettings.AllowedHosts = "*";
+
+            appConfigurationSettings.Logging = new LoggingSettingsDto()
+            {
+                LogLevel = new LogLevelDto()
+                {
+                    Default = "Information",
+                    MicrosoftAspNetCore = "Warning"
+                }
+            };
+
+            appSettingsJson = JsonConvert.SerializeObject(appConfigurationSettings, Formatting.Indented);
+            appSettingsJson = appSettingsJson.Replace("MicrosoftAspNetCore", "Microsoft.AspNetCore");
+
+            System.IO.File.WriteAllText(appSettingsPath, appSettingsJson);
         }
 
         private void AddScriptAsEmbebededResource(string newFileName, string migrationsProjectPath)

@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -48,6 +48,7 @@ namespace BasePointGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine($"using FluentValidation;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -103,6 +104,35 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
+            content.AppendLine($"\t\t\tvar previous{className} = new {className}Builder()");
+            content.AppendLine($"\t\t\t\t.Build();");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
+            content.AppendLine("");
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.Id.Value))");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(previous{className});");
+            content.AppendLine("");
+
+            var propertiesToPreventDuplication = properties.Where(p => p.PreventDuplication && !p.IsListProperty()).ToList();
+
+            int testsMethodsAdded = 0;
+
+            foreach (var property in propertiesToPreventDuplication)
+            {
+                if (testsMethodsAdded > 0)
+                    content.AppendLine();
+
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetAnother{className}By{property.Name}(It.IsAny<{className}>(), input.{property.Name}))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync(null as {className});");
+
+                testsMethodsAdded++;
+
+                content.AppendLine();
+            }
+
+
+            content.AppendLine("");
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
@@ -115,6 +145,7 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
+
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.Id.Value))");
             content.AppendLine($"\t\t\t\t.ReturnsAsync(null as {className});");
             content.AppendLine("");
@@ -126,14 +157,10 @@ namespace BasePointGenerator
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Verify(x => x.GetById(input.Id.Value), Times.Once);");
             content.AppendLine("\t\t}");
 
-            var propertiesToPreventDuplication = properties
-                .Where(p => p.PreventDuplication && !p.IsListProperty())
-                .ToList();
-
             if (propertiesToPreventDuplication.Count > 0)
                 content.AppendLine();
 
-            int testsMethodsAdded = 0;
+            testsMethodsAdded = 0;
 
             foreach (var property in propertiesToPreventDuplication)
             {
@@ -150,7 +177,16 @@ namespace BasePointGenerator
                 content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}Builder()");
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
-                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetAnother{className}By{property.Name}({className.GetWordWithFirstLetterDown()}, input.{property.Name}))");
+
+                content.AppendLine($"\t\t\tvar previous{className} = new {className}Builder()");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine("");
+
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.Id.Value))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync(previous{className});");
+                content.AppendLine("");
+
+                content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetAnother{className}By{property.Name}(previous{className}, input.{property.Name}))");
                 content.AppendLine($"\t\t\t\t.ReturnsAsync({className.GetWordWithFirstLetterDown()});");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(input);");

@@ -1,11 +1,11 @@
-﻿using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -43,6 +43,7 @@ namespace BasePointGenerator
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -90,6 +91,14 @@ namespace BasePointGenerator
             content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar id = Guid.NewGuid();");
+            content.AppendLine("");
+
+            content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()}Output = new {className}OutputBuilder()");
+            content.AppendLine($"\t\t\t\t.Build();");
+            content.AppendLine("");
+
+            content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}CqrsQueryProvider.Setup(x => x.GetById(id))");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync({className.GetWordWithFirstLetterDown()}Output);");
             content.AppendLine("");
             content.AppendLine($"\t\t\tvar output = await _useCase.ExecuteAsync(id);");
             content.AppendLine("");

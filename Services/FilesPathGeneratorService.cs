@@ -1,6 +1,6 @@
-﻿using BasePointGenerator.Dtos;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using BasePointGenerator.Dtos;
 
 namespace BasePointGenerator.Services
 {
@@ -35,6 +35,7 @@ namespace BasePointGenerator.Services
         public string PostmanCollectionPath { get; private set; }
         public string DapperServiceCollectionExtentionsPath { get; private set; }
         public string ApplicationServiceCollectionExtentionsPath { get; private set; }
+        public string AppSettingsPath { get; private set; }
 
         public FilesPathGeneratorService(SolutionItensDto solutionItens, string originalFilePath)
         {
@@ -73,6 +74,7 @@ namespace BasePointGenerator.Services
             PostmanCollectionPath = GetPostmanCollectionPath();
             DapperServiceCollectionExtentionsPath = GetDapperServiceCollectionExtentionsPath();
             ApplicationServiceCollectionExtentionsPath = GetApplicationServiceCollectionExtentionsPath();
+            AppSettingsPath = GetAppSettingsPath();
         }
 
         private string GetInterfaceListItemOutputQueryProviderPath()
@@ -115,6 +117,16 @@ namespace BasePointGenerator.Services
                 solutionPath += "\\";
 
             return string.Concat(solutionPath, "Postman");
+        }
+
+        private string GetAppSettingsPath()
+        {
+            var presentationProject = _solutionItens.Solution.Children.ToList().Where(c => c.Name.EndsWith(".Presentation.AspNetCoreApi"))
+               .FirstOrDefault();
+
+            var appSettingsPath = Path.Combine(Path.GetDirectoryName(presentationProject?.FullPath), "appsettings.json");
+
+            return (presentationProject is not null) ? appSettingsPath : string.Empty;
         }
 
         private string GetSharedConstantsPath()
