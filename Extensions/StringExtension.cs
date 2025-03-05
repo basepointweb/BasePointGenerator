@@ -1,10 +1,17 @@
-﻿namespace BasePointGenerator.Extensions
+﻿using System.Data.Entity.Infrastructure.Pluralization;
+
+namespace BasePointGenerator.Extensions
 {
     public static class StringExtension
     {
         public static string GetWordWithFirstLetterDown(this string word)
         {
             return $"{word.ToLower()[0]}{word.Substring(1)}";
+        }
+
+        public static string GetWordWithFirstLetterUpper(this string word)
+        {
+            return $"{word.ToUpper()[0]}{word.Substring(1)}";
         }
 
         public static string ReplaceFirstOccurrence(this string texto, string oldValue, string newValue)
@@ -30,6 +37,13 @@
             {
                 return string.Empty;
             }
+        }
+
+        public static string ToPlural(this string word)
+        {
+            var pluralization = new EnglishPluralizationService();
+
+            return pluralization.Pluralize(word);
         }
     }
 }

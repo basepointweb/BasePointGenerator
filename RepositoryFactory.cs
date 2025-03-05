@@ -36,8 +36,8 @@ namespace BasePointGenerator
 
             content.AppendLine("using BasePoint.Core.Domain.Repositories;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{originalClassName.ToPlural()};");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders.{originalClassName.ToPlural()};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -128,7 +128,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

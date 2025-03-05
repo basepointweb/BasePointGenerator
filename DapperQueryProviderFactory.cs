@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -41,8 +41,8 @@ namespace BasePointGenerator
             content.AppendLine($"using BasePoint.Core.Application.Dtos.Input;");
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders.{originalClassName.ToPlural()};");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -139,7 +139,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

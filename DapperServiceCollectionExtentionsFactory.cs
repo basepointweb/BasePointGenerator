@@ -1,5 +1,6 @@
 ﻿using BasePointGenerator.Dtos;
 using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -95,22 +96,22 @@ namespace BasePointGenerator
                 newFileContent = newFileContent.Insert(insertIndex + 1, "\n" + repositoriesDependencyMappings.ToString());
             }
 
-            var commandProviderUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders;";
+            var commandProviderUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(commandProviderUsingDeclaration) && !usingDeclarations.ToString().Contains(commandProviderUsingDeclaration))
                 usingDeclarations.AppendLine($"{commandProviderUsingDeclaration}");
 
-            var repositoriesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories;";
+            var repositoriesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(repositoriesUsingDeclaration) && !usingDeclarations.ToString().Contains(repositoriesUsingDeclaration))
                 usingDeclarations.AppendLine($"{repositoriesUsingDeclaration}");
 
-            var repositoriesInterfacesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;";
+            var repositoriesInterfacesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(repositoriesInterfacesUsingDeclaration) && !usingDeclarations.ToString().Contains(repositoriesInterfacesUsingDeclaration))
                 usingDeclarations.AppendLine($"{repositoriesInterfacesUsingDeclaration}");
 
-            var usingDapperCommandProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.CommandProviders;";
+            var usingDapperCommandProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.CommandProviders.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(usingDapperCommandProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperCommandProviderDeclaration))
                 usingDeclarations.AppendLine($"{usingDapperCommandProviderDeclaration}");
@@ -120,17 +121,17 @@ namespace BasePointGenerator
             if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
                 usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
 
-            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;";
+            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
                 usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
 
-            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.QueryProviders;";
+            usingDapperQueryProviderDeclaration = $"using {GetNameRootProjectName()}.Cqrs.Dapper.QueryProviders.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(usingDapperQueryProviderDeclaration) && !usingDeclarations.ToString().Contains(usingDapperQueryProviderDeclaration))
                 usingDeclarations.AppendLine($"{usingDapperQueryProviderDeclaration}");
 
-            var usingApplicationDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos;";
+            var usingApplicationDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};";
 
             if (!newFileContent.Contains(usingApplicationDtosDeclaration) && !usingDeclarations.ToString().Contains(usingApplicationDtosDeclaration))
                 usingDeclarations.AppendLine($"{usingApplicationDtosDeclaration}");

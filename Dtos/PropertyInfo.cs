@@ -8,10 +8,10 @@ namespace BasePointGenerator.Dtos
 
         private static readonly HashSet<string> PrimitiveTypeNames = new HashSet<string>
         {
-            "Boolean", "Byte", "SByte", "Char",
-            "Decimal", "Double", "Single",
-            "Int32", "UInt32", "Int64", "UInt64",
-            "Int16", "UInt16", "String", "string", "DateTime", "DateTimeOffset"
+            "BOOLEAN", "BYTE", "SBYTE", "CHAR",
+            "DECIMAL","FLOAT", "DOUBLE", "SINGLE",
+            "INT32", "UINT32", "INT64", "UINT64",
+            "INT16", "UINT16", "STRING", "DATETIME", "DATETIMEOFFSET"
         };
 
         public string Type { get; }
@@ -26,7 +26,7 @@ namespace BasePointGenerator.Dtos
 
         public bool IsPrimitive()
         {
-            return PrimitiveTypeNames.Contains(Type);
+            return PrimitiveTypeNames.Contains(Type.ToUpper());
         }
 
         public bool IsListProperty()

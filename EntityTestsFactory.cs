@@ -122,7 +122,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

@@ -72,13 +72,13 @@ namespace BasePointGenerator
             }
 
             PostmanCollectionItem collectionItem =
-                postmanCollection.Item.FirstOrDefault(p => p.Name == originalClassName);
+                postmanCollection.Item.FirstOrDefault(p => p.Name == originalClassName.ToPlural());
 
             if (collectionItem is null)
             {
                 collectionItem = new PostmanCollectionItem()
                 {
-                    Name = originalClassName,
+                    Name = originalClassName.ToPlural(),
                     Item = new List<PostmanCollectionItemItem>()
                 };
 
@@ -135,7 +135,7 @@ namespace BasePointGenerator
                                 {
                                     Raw = $"{{apiUrlPrefix}}/api/{originalClassName.GetWordWithFirstLetterDown()}",
                                     Host = new List<string>() { "{{apiUrlPrefix}}" },
-                                    Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s" }
+                                    Path = new List<string>() { "api", $"{originalClassName.ToPlural().GetWordWithFirstLetterDown()}" }
                                 }
                             },
                             Response = new List<PostmanCollectionItemResponse>()
@@ -194,9 +194,9 @@ namespace BasePointGenerator
                             },
                             Url = new PostmanCollectionItemRequestUrl()
                             {
-                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.GetWordWithFirstLetterDown()}s/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
+                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.ToPlural().GetWordWithFirstLetterDown()}/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
-                                Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
+                                Path = new List<string>() { "api", $"{originalClassName.ToPlural().GetWordWithFirstLetterDown()}", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
                             }
                         },
                         Response = new List<PostmanCollectionItemResponse>()
@@ -224,9 +224,9 @@ namespace BasePointGenerator
                             Header = new List<string>(),
                             Url = new PostmanCollectionItemRequestUrl()
                             {
-                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.GetWordWithFirstLetterDown()}s/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
+                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.ToPlural().GetWordWithFirstLetterDown()}/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
-                                Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
+                                Path = new List<string>() { "api", $"{originalClassName.ToPlural().GetWordWithFirstLetterDown()}", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
                             }
                         },
                         Response = new List<PostmanCollectionItemResponse>()
@@ -250,9 +250,9 @@ namespace BasePointGenerator
                             Header = new List<string>(),
                             Url = new PostmanCollectionItemRequestUrl()
                             {
-                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName}s/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
+                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.ToPlural()}/{{{originalClassName.GetWordWithFirstLetterDown()}Id}}",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
-                                Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
+                                Path = new List<string>() { "api", $"{originalClassName.ToPlural().GetWordWithFirstLetterDown()}", $"{{{originalClassName.GetWordWithFirstLetterDown()}Id}}" }
                             }
                         },
                         Response = new List<PostmanCollectionItemResponse>()
@@ -266,14 +266,14 @@ namespace BasePointGenerator
                 {
                     collectionItem.Item.Add(new PostmanCollectionItemItem()
                     {
-                        Name = $"Get {originalClassName}s",
+                        Name = $"Get {originalClassName.ToPlural()}",
                         Request = new PostmanCollectionItemRequest()
                         {
                             Method = "POST",
                             Header = new List<string>(),
                             Url = new PostmanCollectionItemRequestUrl()
                             {
-                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName}s/get-by-filter?itemsPerPage=10&pageNumber=1&filterValue=Name",
+                                Raw = $"{{apiUrlPrefix}}/api/{originalClassName.ToPlural()}/get-by-filter?itemsPerPage=10&pageNumber=1&filterValue=Name",
                                 Host = new List<string>() { "{{apiUrlPrefix}}" },
                                 Path = new List<string>() { "api", $"{originalClassName.GetWordWithFirstLetterDown()}s", $"get-by-filter" },
                                 Query = new List<PostmanCollectionItemRequestUrlQuery>()

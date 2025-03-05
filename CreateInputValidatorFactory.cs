@@ -37,6 +37,8 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using FluentValidation;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -99,7 +101,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

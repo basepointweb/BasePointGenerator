@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using BasePointGenerator.Dtos;
+using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using BasePointGenerator.Dtos;
-using BasePointGenerator.Exceptions;
-using BasePointGenerator.Extensions;
 
 namespace BasePointGenerator
 {
@@ -38,9 +38,9 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using BasePoint.Core.UnitOfWork.Interfaces;");
             content.AppendLine("using BasePoint.Core.Application.UseCases;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -139,7 +139,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

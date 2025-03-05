@@ -37,9 +37,9 @@ namespace BasePointGenerator
             content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using BasePoint.Core.Application.UseCases;");
             content.AppendLine("using BasePoint.Core.Exceptions;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Cqrs.QueryProviders.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos;");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -110,7 +110,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

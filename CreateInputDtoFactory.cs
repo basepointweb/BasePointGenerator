@@ -66,7 +66,7 @@ namespace BasePointGenerator
                 if (item.Name.Equals("Id"))
                     content.AppendLine("\t\t[JsonIgnore]");
 
-                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name}", " { get; set; }"));
+                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name}", " { get; init; }"));
             }
         }
 
@@ -84,7 +84,12 @@ namespace BasePointGenerator
             if (count > 1)
                 namespacePath = namespacePath.ReplaceFirstOccurrence("." + solutionName, "");
 
-            namespacePath = namespacePath.Substring(1, namespacePath.Length - 2);
+            var caracteresDiference = 1;
+
+            if (namespacePath.EndsWith("."))
+                caracteresDiference += 1;
+
+            namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
         }

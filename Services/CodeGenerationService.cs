@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using BasePointGenerator.ConfigurationSettings;
+using BasePointGenerator.Dtos;
+using BasePointGenerator.Extensions;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using BasePointGenerator.ConfigurationSettings;
-using BasePointGenerator.Dtos;
-using Newtonsoft.Json;
 
 namespace BasePointGenerator.Services
 {
@@ -330,7 +331,20 @@ namespace BasePointGenerator.Services
 
         protected void Generatefile(string newFileName, string filePath, FileContentGenerationFunction generationFunction, FileContentGenerationOptions options)
         {
+            var exceptionFiles = new List<string>()
+            {
+                "SharedConstants.cs"
+            };
+
+            if (!exceptionFiles.Contains(newFileName) && !newFileName.EndsWith(".sql") && !newFileName.Contains("postman"))
+            {
+                filePath = Path.Combine(filePath, FileName.Replace(".cs", "").ToPlural());
+            }
+
             var generatedFile = Path.Combine(filePath, newFileName);
+
+            Directory.CreateDirectory(filePath);
+
             var contentFile = "";
 
             if (!options.OnlyProcessFilePaths)

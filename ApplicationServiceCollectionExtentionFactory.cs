@@ -1,4 +1,5 @@
 ﻿using BasePointGenerator.Dtos;
+using BasePointGenerator.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -108,12 +109,12 @@ namespace BasePointGenerator
 
             if (options.GenerateCreateUseCase || options.GenerateUpdateUseCase || options.GenerateDeleteUseCase)
             {
-                var useCasesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Application.UseCases;";
+                var useCasesUsingDeclaration = $"using {GetNameRootProjectName()}.Core.Application.UseCases.{originalClassName.ToPlural()};";
 
                 if (!newFileContent.Contains(useCasesUsingDeclaration) && !usingDeclarations.ToString().Contains(useCasesUsingDeclaration))
                     usingDeclarations.AppendLine($"{useCasesUsingDeclaration}");
 
-                var usingDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos;";
+                var usingDtosDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};";
 
                 if (!newFileContent.Contains(usingDtosDeclaration) && !usingDeclarations.ToString().Contains(usingDtosDeclaration))
                     usingDeclarations.AppendLine($"{usingDtosDeclaration}");
@@ -121,17 +122,17 @@ namespace BasePointGenerator
 
             if (options.GenerateCreateUseCase || options.GenerateUpdateUseCase)
             {
-                var usingValidatorsDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators;";
+                var usingValidatorsDeclaration = $"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators.{originalClassName.ToPlural()};";
 
                 if (!newFileContent.Contains(usingValidatorsDeclaration) && !usingDeclarations.ToString().Contains(usingValidatorsDeclaration))
                     usingDeclarations.AppendLine($"{usingValidatorsDeclaration}");
 
-                var usingCoreUseCasesDeclaration = $"using BasePoint.Core.Application.UseCases;";
+                var usingCoreUseCasesDeclaration = $"using BasePoint.Core.Application.UseCases.{originalClassName.ToPlural()};";
 
                 if (!newFileContent.Contains(usingCoreUseCasesDeclaration) && !usingDeclarations.ToString().Contains(usingCoreUseCasesDeclaration))
                     usingDeclarations.AppendLine($"{usingCoreUseCasesDeclaration}");
 
-                var usingCoreQueryProvidersDeclaration = $"using BasePoint.Core.Application.Cqrs.QueryProviders;";
+                var usingCoreQueryProvidersDeclaration = $"using BasePoint.Core.Application.Cqrs.QueryProviders.{originalClassName.ToPlural()};";
 
                 if (!newFileContent.Contains(usingCoreQueryProvidersDeclaration) && !usingDeclarations.ToString().Contains(usingCoreQueryProvidersDeclaration))
                     usingDeclarations.AppendLine($"{usingCoreQueryProvidersDeclaration}");
