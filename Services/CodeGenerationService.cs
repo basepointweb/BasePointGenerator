@@ -1,6 +1,27 @@
 ﻿using BasePointGenerator.ConfigurationSettings;
 using BasePointGenerator.Dtos;
 using BasePointGenerator.Extensions;
+using BasePointGenerator.Generators.ApplicationLayer.Configurations;
+using BasePointGenerator.Generators.ApplicationLayer.Cqrs.QueryProviders;
+using BasePointGenerator.Generators.ApplicationLayer.Dtos;
+using BasePointGenerator.Generators.ApplicationLayer.UseCases;
+using BasePointGenerator.Generators.ApplicationLayer.Validators;
+using BasePointGenerator.Generators.DomainLayer.Cqrs.CommandProviders;
+using BasePointGenerator.Generators.DomainLayer.Repositories;
+using BasePointGenerator.Generators.DomainLayer.Repositories.Interfaces;
+using BasePointGenerator.Generators.InfrastructureLayer.Configurations;
+using BasePointGenerator.Generators.InfrastructureLayer.CqrsCommandProvider;
+using BasePointGenerator.Generators.InfrastructureLayer.CqrsQueryProvider;
+using BasePointGenerator.Generators.InfrastructureLayer.Migrations;
+using BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions;
+using BasePointGenerator.Generators.Postman;
+using BasePointGenerator.Generators.PresentationLayer.Controllers;
+using BasePointGenerator.Generators.Shared;
+using BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos;
+using BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases;
+using BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators;
+using BasePointGenerator.Generators.UnitTests.DomainLayer.Builders;
+using BasePointGenerator.Generators.UnitTests.DomainLayer.Entities;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -333,7 +354,8 @@ namespace BasePointGenerator.Services
         {
             var exceptionFiles = new List<string>()
             {
-                "SharedConstants.cs"
+                "SharedConstants.cs",
+                "ServiceCollectionExtentions.cs"
             };
 
             if (!exceptionFiles.Contains(newFileName) && !newFileName.EndsWith(".sql") && !newFileName.Contains("postman"))

@@ -47,16 +47,11 @@
   <ItemGroup>
     <Compile Include="ConfigurationSettings\AppSettingsDto.cs" />
     <Compile Include="Commands\FileEditorContextMenuCommand.cs" />
-    <Compile Include="ApplicationServiceCollectionExtentionFactory.cs" />
     <Compile Include="ConfigurationSettings\AppConfigurationSettings.cs" />
     <Compile Include="ConfigurationSettings\LoggingSettingsDto.cs" />
     <Compile Include="ConfigurationSettings\LogLevelDto.cs" />
-    <Compile Include="DapperListItemOutputQueryProviderFactory.cs" />
-    <Compile Include="DapperServiceCollectionExtentionsFactory.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemEventScriptPackage.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequestUrlQuery.cs" />
-    <Compile Include="CommonConstantsFactory.cs" />
-    <Compile Include="DapperQueryProviderFactory.cs" />
     <Compile Include="Dtos\FileContentGenerationOptions.cs" />
     <Compile Include="Dtos\Postman\PostmanCollection.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionInfo.cs" />
@@ -71,14 +66,44 @@
     <Compile Include="Dtos\Postman\PostmanCollectionItemResponse.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequest.cs" />
     <Compile Include="Dtos\SolutionItensDto.cs" />
-    <Compile Include="InterfaceListItemOutputQueryProviderFactory.cs" />
-    <Compile Include="PostmanCollectionFactory.cs" />
-    <Compile Include="GetByIdUseCaseFactoryTestsFactory.cs" />
-    <Compile Include="GetByIdUseCaseFactory.cs" />
-    <Compile Include="EntityBuilderFactory.cs" />
-    <Compile Include="InterfaceQueryProviderFactory.cs" />
-    <Compile Include="ListItemOutputFactory.cs" />
-    <Compile Include="ListItemOutputBuilderFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Configurations\ApplicationServiceCollectionExtentionFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Cqrs\QueryProviders\InterfaceListItemOutputQueryProviderFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Cqrs\QueryProviders\InterfaceQueryProviderFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Dtos\CreateInputDtoFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Dtos\ListItemOutputFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Dtos\OutputDtoFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Dtos\UpdateInputDtoFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\UseCases\CreateUseCaseFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\UseCases\DeleteUseCaseFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\UseCases\GetByIdUseCaseFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\UseCases\UpdateUseCaseFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Validators\CreateInputValidatorFactory.cs" />
+    <Compile Include="Generators\ApplicationLayer\Validators\UpdateInputValidatorFactory.cs" />
+    <Compile Include="Generators\DomainLayer\Cqrs\CommandProviders\InterfaceCommandProviderFactory.cs" />
+    <Compile Include="Generators\DomainLayer\Repositories\Interfaces\InterfaceRepositoryFactory.cs" />
+    <Compile Include="Generators\DomainLayer\Repositories\RepositoryFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\Configurations\DapperServiceCollectionExtentionsFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\CqrsCommandProvider\DapperCommandFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\CqrsCommandProvider\DapperCommandProviderFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\CqrsQueryProvider\DapperListItemOutputQueryProviderFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\CqrsQueryProvider\DapperQueryProviderFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\Migrations\MigrationCreateTableFactory.cs" />
+    <Compile Include="Generators\InfrastructureLayer\TableDefinitions\DapperTableDefinitionFactory.cs" />
+    <Compile Include="Generators\Postman\PostmanCollectionFactory.cs" />
+    <Compile Include="Generators\PresentationLayer\Controllers\ControllerFactory.cs" />
+    <Compile Include="Generators\Shared\CommonConstantsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Dtos\CreateInputBuilderFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Dtos\ListItemOutputBuilderFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Dtos\OutputBuilderFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Dtos\UpdateInputBuilderFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\UseCases\CreateUseCaseTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\UseCases\DeleteUseCaseTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\UseCases\GetByIdUseCaseFactoryTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\UseCases\UpdateUseCaseTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Validators\CreateInputValidatorTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\ApplicationLayer\Validators\UpdateInputValidatorTestsFactory.cs" />
+    <Compile Include="Generators\UnitTests\DomainLayer\Builders\EntityBuilderFactory.cs" />
+    <Compile Include="Generators\UnitTests\DomainLayer\Entities\EntityTestsFactory.cs" />
     <Compile Include="Services\FilesPathGeneratorService.cs" />
     <Compile Include="Services\CodeGenerationService.cs" />
     <Compile Include="source.extension.cs">
@@ -86,37 +111,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
-    <Compile Include="UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="frmCodeGenerationOptions.cs" />
     <Compile Include="frmCodeGenerationOptionsCommand.cs" />
     <Compile Include="frmCodeGenerationOptionsControl.xaml.cs">
       <DependentUpon>frmCodeGenerationOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UpdateInputValidatorFactory.cs" />
-    <Compile Include="EntityTestsFactory.cs" />
     <Compile Include="Dtos\MethodInfo.cs" />
-    <Compile Include="OutputBuilderFactory.cs" />
-    <Compile Include="DapperCommandProviderFactory.cs" />
-    <Compile Include="UpdateInputBuilderFactory.cs" />
-    <Compile Include="CreateInputBuilderFactory.cs" />
-    <Compile Include="CreateInputValidatorTestsFactory.cs" />
-    <Compile Include="CreateInputValidatorFactory.cs" />
-    <Compile Include="DapperTableDefinitionFactory.cs" />
-    <Compile Include="DeleteUseCaseFactory.cs" />
-    <Compile Include="DeleteUseCaseTestsFactory.cs" />
-    <Compile Include="ControllerFactory.cs" />
-    <Compile Include="MigrationCreateTableFactory.cs" />
-    <Compile Include="UpdateUseCaseTestsFactory.cs" />
-    <Compile Include="CreateUseCaseTestsFactory.cs" />
-    <Compile Include="OutputDtoFactory.cs" />
-    <Compile Include="DapperCommandFactory.cs" />
-    <Compile Include="UpdateInputDtoFactory.cs" />
-    <Compile Include="CreateInputDtoFactory.cs" />
-    <Compile Include="UpdateUseCaseFactory.cs" />
-    <Compile Include="InterfaceCommandProviderFactory.cs" />
-    <Compile Include="CreateUseCaseFactory.cs" />
-    <Compile Include="RepositoryFactory.cs" />
-    <Compile Include="InterfaceRepositoryFactory.cs" />
     <Compile Include="Dtos\PropertyInfo.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
@@ -204,6 +204,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
