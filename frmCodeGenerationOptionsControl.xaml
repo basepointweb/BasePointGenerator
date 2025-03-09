@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:local="clr-namespace:BasePointGenerator"             
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
@@ -11,6 +12,7 @@
              Name="MyToolWindow"
              Height="Auto">
     <UserControl.Resources>
+        <local:StringTypeConverter x:Key="StringTypeConverter"/>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Template">
@@ -174,8 +176,25 @@
                                               PreviewTextInput="OnlyNumbers" PreviewKeyDown="BlockSpace" LostFocus="TextBox_LostFocus"
                                               Text="{Binding PropertySize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              ToolTip="Generate a get method on repository for this property."/>
+                                              VerticalAlignment="Center">
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <!-- Padrão: Desabilitado -->
+                                                        <Setter Property="IsReadOnly" Value="True"/>
+                                                        <Setter Property="Background" Value="LightGray"/>
+                                                        <Setter Property="Foreground" Value="DarkGray"/>
+
+                                                        <Style.Triggers>
+                                                            <!-- Se for String, ativa edição e muda cor de fundo -->
+                                                            <DataTrigger Binding="{Binding Type, Converter={StaticResource StringTypeConverter}}" Value="True">
+                                                                <Setter Property="IsReadOnly" Value="False"/>
+                                                                <Setter Property="Background" Value="White"/>
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

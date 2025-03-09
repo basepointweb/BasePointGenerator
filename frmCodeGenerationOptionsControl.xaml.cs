@@ -5,6 +5,7 @@ using EnvDTE80;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -135,7 +136,22 @@ namespace BasePointGenerator
         {
             CodeGenerationService.ReloadFileInformations();
 
+            var currentProperties = this.ClassProperties;
+
             this.ClassProperties = CodeGenerationService.Properties;
+
+            foreach (var property in this.ClassProperties)
+            {
+                var currentProperty = currentProperties.FirstOrDefault(x => x.Name == property.Name);
+
+                if (currentProperty is not null)
+                {
+                    property.PropertySize = currentProperty.PropertySize;
+                    property.GenerateGetMethodOnRepository = currentProperty.GenerateGetMethodOnRepository;
+                    property.PreventDuplication = currentProperty.PreventDuplication;
+                }
+            }
+
             GRD_Properties.ItemsSource = this.ClassProperties;
             BTN_Generate.IsEnabled = true;
             LBL_ClassProperties.Text = "Properties from " + CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");

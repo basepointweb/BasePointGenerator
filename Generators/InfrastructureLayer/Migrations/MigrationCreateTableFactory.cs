@@ -108,7 +108,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                     mySqlType = $"DECIMAL({property.PropertySize},2)";
                     break;
                 case "FLOAT":
-                    mySqlType = $"DECIMAL({property.PropertySize},2)";
+                    mySqlType = $"FLOAT({property.PropertySize},2)";
                     break;
                 case "BOOL":
                     mySqlType = $"BOOLEAN DEFAULT TRUE";
