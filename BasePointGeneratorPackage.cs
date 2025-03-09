@@ -1,13 +1,13 @@
-﻿global using System;
-global using Community.VisualStudio.Toolkit;
+﻿global using Community.VisualStudio.Toolkit;
 global using Microsoft.VisualStudio.Shell;
+global using System;
 global using Task = System.Threading.Tasks.Task;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 
 namespace BasePointGenerator
@@ -36,7 +36,7 @@ namespace BasePointGenerator
             {
                 var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
-                if (IsNewSolution(solution.FullPath))
+                if (solution is not null && IsNewSolution(solution.FullPath))
                     await SetStartupProjectAsync(solution);
             }
         }

@@ -1,4 +1,6 @@
-﻿using System.Data.Entity.Infrastructure.Pluralization;
+﻿using System.Collections.Generic;
+using System.Data.Entity.Infrastructure.Pluralization;
+using System.Text.RegularExpressions;
 
 namespace BasePointGenerator.Extensions
 {
@@ -24,19 +26,23 @@ namespace BasePointGenerator.Extensions
             return texto.Substring(0, index) + newValue + texto.Substring(index + oldValue.Length);
         }
 
-        public static string GetSubstringBetween(this string input, string startString, string endString)
+        public static string[] SubstringsBetween(this string str, string initialString, string finalString)
         {
-            int startIndex = input.IndexOf(startString);
-            int endIndex = input.IndexOf(endString);
+            var substrings = new List<string>();
 
-            if (startIndex != -1 && endIndex != -1 && startIndex < endIndex)
+            string escapedInitial = Regex.Escape(initialString);
+            string escapedFinal = Regex.Escape(finalString);
+
+            string pattern = $@"(?<={escapedInitial})(.*?)(?={escapedFinal})";
+
+            MatchCollection matches = Regex.Matches(str, pattern);
+
+            foreach (Match match in matches)
             {
-                return input.Substring(startIndex + 1, endIndex - startIndex - 1);
+                substrings.Add(match.Value);
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            return [.. substrings];
         }
 
         public static string ToPlural(this string word)

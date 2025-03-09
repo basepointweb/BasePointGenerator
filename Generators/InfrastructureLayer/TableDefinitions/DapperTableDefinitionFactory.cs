@@ -85,7 +85,18 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
                 content.AppendLine("\t\t\t\t{");
                 content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}\",");
                 content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
-                content.AppendLine($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
+                content.Append($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
+
+                if (item.Type.ToUpper().Contains("STRING") || item.Type.ToUpper().Contains("CHAR"))
+                {
+                    content.Append($",\n");
+                    content.AppendLine($"\t\t\t\t\tSize = {item.PropertySize}");
+                }
+                else
+                {
+                    content.Append($",\n");
+                }
+
                 content.AppendLine("\t\t\t\t},");
             }
             content.AppendLine("\t\t\t}");
@@ -94,9 +105,15 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
 
         private static object GetDbTypeName(string type)
         {
+            type = type.Replace("?", "");
+
+            if (type.Contains("NULLABLE"))
+                type = type.SubstringsBetween("NULLABLE<", ">")[0];
+
             return type switch
             {
                 "string" => "AnsiString",
+                "char" => "AnsiString",
                 "int" => "Int32",
                 "int?" => "Int32",
                 "DateTime" => "DateTime",

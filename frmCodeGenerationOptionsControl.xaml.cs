@@ -192,5 +192,30 @@ namespace BasePointGenerator
 
             e.Handled = true;
         }
+
+        private void OnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = !int.TryParse(e.Text, out _);
+        }
+
+        private void BlockSpace(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Space)
+                e.Handled = true;
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+
+            var entryValue = textBox.Text;
+
+            var intValue = 0;
+
+            int.TryParse(entryValue, out intValue);
+
+            if (intValue <= 0)
+                textBox.Text = "0";
+        }
     }
 }

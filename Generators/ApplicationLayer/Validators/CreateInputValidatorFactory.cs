@@ -74,12 +74,27 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
 
             foreach (var item in properties)
             {
+                var propertyType = item.Type.ToUpper().Replace("?", "");
+
+                if (propertyType.Contains("NULLABLE"))
+                    propertyType = propertyType.SubstringsBetween("NULLABLE<", ">")[0];
+
                 if (validationsAdded > 0)
                     content.AppendLine("");
 
                 content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");
                 content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
+
+                if (propertyType == "STRING" && item.PropertySize > 0)
+                {
+                    content.AppendLine("");
+                    content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
+                    content.AppendLine($"\t\t\t\t.MaximumLength(SharedConstants.Restrictions.{originalClassName}{item.Name}MaximumLength)");
+                    content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}MaximumLengthIs.Format(SharedConstants.Restrictions.{originalClassName}{item.Name}MaximumLength));");
+
+                    validationsAdded++;
+                }
 
                 validationsAdded++;
             }

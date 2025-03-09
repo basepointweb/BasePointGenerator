@@ -1,5 +1,6 @@
 ﻿using BasePointGenerator.Dtos;
 using BasePointGenerator.Exceptions;
+using BasePointGenerator.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +46,9 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
             foreach (var property in propertiesToGenerateTableFields)
             {
                 if (property.IsPrimitive())
-                    content.AppendLine($"  `{property.Name}`{property.Type} NOT NULL,");
+                {
+                    content.AppendLine($"  `{property.Name}` {GetMySqlPropertyType(property)},");
+                }
                 else
                     content.AppendLine($"  `{property.Type}Id` VARCHAR(36) NOT NULL,");
             }
@@ -75,6 +78,53 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
             content.AppendLine($"  PRIMARY KEY (`Id`));");
 
             return content.ToString();
+        }
+
+        private static object GetMySqlPropertyType(PropertyInfo property)
+        {
+            var type = property.Type.ToUpper();
+
+            var isNullable = (type.EndsWith("?") || type.Contains("NULLABLE"));
+
+            if (type.Contains("NULLABLE"))
+                type = type.SubstringsBetween("NULLABLE<", ">")[0];
+
+            type = type.Replace("?", "");
+
+            var mySqlType = type;
+
+            switch (type)
+            {
+                case "INT":
+                    mySqlType = $"TINYINT";
+                    break;
+                case "STRING":
+                    mySqlType = $"VARCHAR({property.PropertySize})";
+                    break;
+                case "CHAR":
+                    mySqlType = $"VARCHAR({1})";
+                    break;
+                case "DECIMAL":
+                    mySqlType = $"DECIMAL({property.PropertySize},2)";
+                    break;
+                case "FLOAT":
+                    mySqlType = $"DECIMAL({property.PropertySize},2)";
+                    break;
+                case "BOOL":
+                    mySqlType = $"BOOLEAN DEFAULT TRUE";
+                    break;
+                case "DATETIME":
+                    mySqlType = $"DATETIME";
+                    break;
+                case "TIMESPAN":
+                    mySqlType = $"TIMESTAMP";
+                    break;
+                case "BYTE[]":
+                    mySqlType = $"BLOB";
+                    break;
+            }
+
+            return mySqlType + (isNullable ? " NULL" : " NOT NULL");
         }
 
         private static void Validate(string fileContent)

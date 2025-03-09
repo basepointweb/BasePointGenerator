@@ -36,6 +36,7 @@ namespace BasePointGenerator.Generators.Shared
             var constantsFileContent = File.ReadAllText(constantsFile);
 
             var newErrorMessages = new StringBuilder();
+            var restrictions = new StringBuilder();
 
             var constantName = $"{originalClassName}WithIdDoesNotExists";
 
@@ -44,6 +45,24 @@ namespace BasePointGenerator.Generators.Shared
 
             foreach (var property in properties)
             {
+                var propertyType = property.Type.ToUpper().Replace("?", "");
+
+                if (propertyType.Contains("NULLABLE"))
+                    propertyType = propertyType.SubstringsBetween("NULLABLE<", ">")[0];
+
+                if (propertyType == "STRING" && property.PropertySize > 0)
+                {
+                    constantName = $"{originalClassName}{property.Name}MaximumLengthIs";
+
+                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName} {property.Name} maximum length is {{0}}.\";");
+
+                    constantName = $"{originalClassName}{property.Name}MaximumLength";
+
+                    if (!constantsFileContent.Contains(constantName) && !restrictions.ToString().Contains(constantName))
+                        restrictions.AppendLine($"\t\t\tpublic int readonly string {constantName} = {property.PropertySize};");
+                }
+
                 if (property.PreventDuplication && !property.IsListProperty())
                 {
                     constantName = $"A{originalClassName}With{property.Name}AlreadyExists";
@@ -62,7 +81,7 @@ namespace BasePointGenerator.Generators.Shared
                     constantName = $"{originalClassName}{property.Name}IsInvalid";
 
                     if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
-                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}{property.Name}IsInvalid.\";");
+                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}{property.Name} is invalid.\";");
                 }
 
                 if (options.GenerateUpdateUseCase)
@@ -70,7 +89,7 @@ namespace BasePointGenerator.Generators.Shared
                     constantName = $"{originalClassName}IdIsInvalid";
 
                     if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
-                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}IdIsInvalid.\";");
+                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}Id is invalid.\";");
                 }
             }
 
@@ -81,6 +100,13 @@ namespace BasePointGenerator.Generators.Shared
             if ((insertIndex != -1) && newErrorMessages.Length > 0)
             {
                 newFileContent = constantsFileContent.Insert(insertIndex + 1, "\n" + newErrorMessages.ToString());
+            }
+
+            insertIndex = newFileContent.IndexOf("Restrictions") + "Restrictions".Length;
+            insertIndex = newFileContent.IndexOf('{', insertIndex);
+            if ((insertIndex != -1) && restrictions.Length > 0)
+            {
+                newFileContent = newFileContent.Insert(insertIndex + 1, "\n" + restrictions.ToString());
             }
 
             return newFileContent;

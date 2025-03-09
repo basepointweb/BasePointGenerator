@@ -166,6 +166,19 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn CellStyle="{StaticResource CellWithPaddingStyle}" Header="Type" Binding="{Binding Type}" Width="250" IsReadOnly="True" />
                             <DataGridTextColumn CellStyle="{StaticResource CellWithPaddingStyle}" Header="Name" Binding="{Binding Name}" Width="250" IsReadOnly="True" />
+                                <DataGridTemplateColumn Header="Property Size" Width="90" MinWidth="90" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox
+                                              Width="88"
+                                              PreviewTextInput="OnlyNumbers" PreviewKeyDown="BlockSpace" LostFocus="TextBox_LostFocus"
+                                              Text="{Binding PropertySize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              ToolTip="Generate a get method on repository for this property."/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="Generate get method" Width="Auto">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>

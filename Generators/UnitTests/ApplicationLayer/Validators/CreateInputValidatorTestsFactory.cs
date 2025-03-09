@@ -101,6 +101,11 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             foreach (PropertyInfo property in properties)
             {
+                var propertyType = property.Type.ToUpper().Replace("?", "");
+
+                if (propertyType.Contains("NULLABLE"))
+                    propertyType = propertyType.SubstringsBetween("NULLABLE<", ">")[0];
+
                 if (methodsAdded > 0)
                     content.AppendLine();
 
@@ -115,6 +120,27 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
                 content.AppendLine("\t\t}");
+
+                if (propertyType == "STRING" && property.PropertySize > 0)
+                {
+                    content.AppendLine();
+
+                    content.AppendLine("\t\t[Fact]");
+                    content.AppendLine($"\t\tpublic void Validate_Input{property.Name}SizeIsGreaterThanMaximumLength_ReturnsIsInvalid()");
+                    content.AppendLine("\t\t{");
+                    content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
+                    content.AppendLine($"\t\t\t\t.With{property.Name}(\"Give a text with a lot of characters that exceed {property.PropertySize} in order to test the maximum length\")");
+                    content.AppendLine($"\t\t\t\t.Build();");
+                    content.AppendLine("");
+                    content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
+                    content.AppendLine("");
+                    content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
+                    content.AppendLine("\t\t}");
+
+                    content.AppendLine();
+
+                    methodsAdded++;
+                }
 
                 methodsAdded++;
             }
