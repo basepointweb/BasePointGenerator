@@ -145,7 +145,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                     content.AppendLine("\t\t[Fact]");
                     content.AppendLine($"\t\tpublic void Validate_Input{property.Name}SizeIsGreaterThanMaximumLength_ReturnsIsInvalid()");
                     content.AppendLine("\t\t{");
-                    content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
+                    content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
                     content.AppendLine($"\t\t\t\t.With{property.Name}(\"Give a text with a lot of characters that exceed {property.PropertySize} in order to test the maximum length\")");
                     content.AppendLine($"\t\t\t\t.Build();");
                     content.AppendLine("");

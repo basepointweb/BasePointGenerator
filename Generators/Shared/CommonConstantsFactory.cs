@@ -60,7 +60,7 @@ namespace BasePointGenerator.Generators.Shared
                     constantName = $"{originalClassName}{property.Name}MaximumLength";
 
                     if (!constantsFileContent.Contains(constantName) && !restrictions.ToString().Contains(constantName))
-                        restrictions.AppendLine($"\t\t\tpublic int readonly string {constantName} = {property.PropertySize};");
+                        restrictions.AppendLine($"\t\t\tpublic static readonly int {constantName} = {property.PropertySize};");
                 }
 
                 if (property.PreventDuplication && !property.IsListProperty())
