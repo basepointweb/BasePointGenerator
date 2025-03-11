@@ -1,6 +1,7 @@
 ﻿using BasePointGenerator.Dtos;
 using BasePointGenerator.Exceptions;
 using BasePointGenerator.Extensions;
+using BasePointGenerator.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             GeneratePrivateVariables(content, properties);
 
-            GenerateBuilderConstructor(content, newClassName);
+            GenerateBuilderConstructor(content, newClassName, properties);
 
             GenerateMethodsToSetValues(content, newClassName, properties);
 
@@ -87,10 +88,18 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
             content.AppendLine("\t\t}");
         }
 
-        private static void GenerateBuilderConstructor(StringBuilder content, string newClassName)
+        private static void GenerateBuilderConstructor(StringBuilder content, string newClassName, IList<PropertyInfo> properties)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}()" + " { }");
+            content.AppendLine($"\t\tpublic {newClassName}()");
+            content.AppendLine("\t\t{");
+
+            foreach (var property in properties)
+            {
+                content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
+            }
+
+            content.AppendLine("\t\t}");
             content.AppendLine();
         }
 

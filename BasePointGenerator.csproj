@@ -104,6 +104,7 @@
     <Compile Include="Generators\UnitTests\ApplicationLayer\Validators\UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="Generators\UnitTests\DomainLayer\Builders\EntityBuilderFactory.cs" />
     <Compile Include="Generators\UnitTests\DomainLayer\Entities\EntityTestsFactory.cs" />
+    <Compile Include="Services\FakeDataFactory.cs" />
     <Compile Include="Services\FilesPathGeneratorService.cs" />
     <Compile Include="Services\CodeGenerationService.cs" />
     <Compile Include="source.extension.cs">
@@ -131,6 +132,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\IconSmall.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Resources\open.png" />
     <Resource Include="Resources\refresh.png" />
     <Resource Include="Resources\save.png" />
