@@ -116,6 +116,9 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                 case "DATETIME":
                     mySqlType = $"DATETIME";
                     break;
+                case "DATETIMEOFFSET":
+                    mySqlType = $"DATETIME";
+                    break;
                 case "TIMESPAN":
                     mySqlType = $"TIMESTAMP";
                     break;

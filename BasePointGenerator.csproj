@@ -132,6 +132,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\IconSmall.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="Resources\open.png" />
     <Resource Include="Resources\refresh.png" />
     <Resource Include="Resources\save.png" />

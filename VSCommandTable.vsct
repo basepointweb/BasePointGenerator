@@ -22,8 +22,7 @@
     <Buttons>
       <Button guid="BasePointGenerator" id="SolutonItemContextMenuCommand" priority="0x0100" type="Button">
         <Parent guid="BasePointGenerator" id="MyMenuGroup" />
-        <Icon guid="ImageCatalogGuid" id="StatusInformation" />
-        <CommandFlag>IconIsMoniker</CommandFlag>
+	    <Icon guid="iconSmall" id="iconSmall1" />
         <Strings>
           <ButtonText>Generate BasePoint code</ButtonText>
           <LocCanonicalName>.BasePointGenerator.SolutonItemContextMenuCommand</LocCanonicalName>
@@ -31,7 +30,7 @@
       </Button>
       <Button guid="guidBasePointGeneratorPackageCmdSet" id="cmdidfrmCodeGenerationOptionsCommand" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
-		  <Icon guid="guidImages" id="bmpPic1" />
+		  <Icon guid="iconSmall" id="iconSmall1" />
         <Strings>
           <ButtonText>Generate BasePoint code</ButtonText>
         </Strings>
@@ -39,8 +38,7 @@
 
 		<Button guid="BasePointGenerator" id="FileEditorContextMenuCommand" priority="0x0100" type="Button">
 			<Parent guid="BasePointGenerator" id="EditorContextMenuGroup" />			
-			<Icon guid="ImageCatalogGuid" id="StatusInformation" />
-			<CommandFlag>IconIsMoniker</CommandFlag>
+			<Icon guid="iconSmall" id="iconSmall1" />
 			<Strings>
 				<ButtonText>Generate BasePoint code</ButtonText>
 				<LocCanonicalName>.BasePointGenerator.FileEditorContextMenuCommand</LocCanonicalName>
@@ -49,6 +47,7 @@
     </Buttons>
     <Bitmaps>
       <Bitmap guid="guidImages" href="Resources\frmCodeGenerationOptionsCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="iconSmall" href="Resources\IconSmall.png" usedList="iconSmall1" />
     </Bitmaps>
   </Commands>
 
@@ -72,5 +71,8 @@
       <IDSymbol name="bmpPicArrows" value="5" />
       <IDSymbol name="bmpPicStrikethrough" value="6" />
     </GuidSymbol>
+	  <GuidSymbol name="iconSmall" value="{a22c6378-1c30-4148-81d3-a76e2c02e044}">
+		  <IDSymbol name="iconSmall1" value="1" />
+	  </GuidSymbol>
   </Symbols>
 </CommandTable>

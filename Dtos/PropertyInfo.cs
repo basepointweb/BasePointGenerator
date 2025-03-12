@@ -9,13 +9,13 @@ namespace BasePointGenerator.Dtos
         private static readonly HashSet<string> PrimitiveTypeNames = new HashSet<string>
         {
             "BOOLEAN", "BYTE", "BYTE[]", "SBYTE", "CHAR",
-            "DECIMAL","FLOAT", "DOUBLE", "SINGLE",
+            "DECIMAL","FLOAT", "DOUBLE", "SINGLE", "INT",
             "INT32", "UINT32", "INT64", "UINT64",
-            "INT16", "UINT16", "STRING", "DATETIME", "DATETIMEOFFSET",
+            "INT16", "UINT16", "STRING", "DATETIME", "DATETIMEOFFSET", "TIMESPAN",
             "NULLABLE<BOOLEAN>", "NULLABLE<BYTE>", "NULLABLE<SBYTE>", "NULLABLE<CHAR>",
-            "NULLABLE<DECIMAL>","NULLABLE<FLOAT>", "NULLABLE<DOUBLE>", "NULLABLE<SINGLE>",
+            "NULLABLE<DECIMAL>","NULLABLE<FLOAT>", "NULLABLE<DOUBLE>", "NULLABLE<SINGLE>", "NULLABLE<INT>",
             "NULLABLE<INT32>", "NULLABLE<UINT32>", "NULLABLE<INT64>", "NULLABLE<UINT64>",
-            "NULLABLE<INT16>", "NULLABLE<UINT16>", "NULLABLE<STRING>", "NULLABLE<DATETIME>", "NULLABLE<DATETIMEOFFSET>"
+            "NULLABLE<INT16>", "NULLABLE<UINT16>", "NULLABLE<STRING>", "NULLABLE<DATETIME>", "NULLABLE<DATETIMEOFFSET>","NULLABLE<TIMESPAN>",
         };
 
         public string Type { get; }

@@ -20,6 +20,9 @@ namespace BasePointGenerator
 
         public const string guidImagesString = "3bc7f790-9200-40f6-9d42-6f96023499af";
         public static Guid guidImages = new Guid(guidImagesString);
+
+        public const string iconSmallString = "a22c6378-1c30-4148-81d3-a76e2c02e044";
+        public static Guid iconSmall = new Guid(iconSmallString);
     }
     /// <summary>
     /// Helper class that encapsulates all CommandIDs uses across VS Package.
@@ -37,5 +40,6 @@ namespace BasePointGenerator
         public const int bmpPicX = 0x0004;
         public const int bmpPicArrows = 0x0005;
         public const int bmpPicStrikethrough = 0x0006;
+        public const int iconSmall1 = 0x0001;
     }
 }

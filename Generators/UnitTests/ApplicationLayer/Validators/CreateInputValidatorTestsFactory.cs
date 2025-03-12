@@ -1,6 +1,7 @@
 ﻿using BasePointGenerator.Dtos;
 using BasePointGenerator.Exceptions;
 using BasePointGenerator.Extensions;
+using BasePointGenerator.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,10 +36,12 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using BasePoint.Core.Shared;");
+            content.AppendLine("using BasePoint.Core.Extensions;");
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Xunit;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Application.Dtos.Builders.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.Validators.{originalClassName.ToPlural()};");
+            content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
@@ -88,10 +91,11 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
             content.AppendLine($"\t\tpublic void Validate_InputIsValid_ReturnsIsValid()");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
-            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
+            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}({FakeDataFactory.GetFakeValue(firstProperty.Type)})");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
+            content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{firstProperty.Name}IsInvalid));");
             content.AppendLine("");
             content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeTrue();");
             content.AppendLine("\t\t}");
@@ -113,12 +117,13 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                 content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
-                content.AppendLine($"\t\t\t\t.With{property.Name}(\"Set an invalid value or null\")");
+                content.AppendLine($"\t\t\t\t.With{property.Name}({FakeDataFactory.GetFakeValue(property.Type)})");
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
+                content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}IsInvalid));");
                 content.AppendLine("\t\t}");
 
                 if (propertyType == "STRING" && property.PropertySize > 0)
@@ -129,12 +134,13 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                     content.AppendLine($"\t\tpublic void Validate_Input{property.Name}SizeIsGreaterThanMaximumLength_ReturnsIsInvalid()");
                     content.AppendLine("\t\t{");
                     content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
-                    content.AppendLine($"\t\t\t\t.With{property.Name}(\"Give a text with a lot of characters that exceed {property.PropertySize} in order to test the maximum length\")");
+                    content.AppendLine($"\t\t\t\t.With{property.Name}(\"Give a text with a lot of characters that exceed exceeds the size {property.PropertySize} in order to test the maximum length\")");
                     content.AppendLine($"\t\t\t\t.Build();");
                     content.AppendLine("");
                     content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
                     content.AppendLine("");
                     content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
+                    content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}MaximumLengthIs.Format(SharedConstants.Restrictions.{className}{property.Name}MaximumLength)));");
                     content.AppendLine("\t\t}");
 
                     content.AppendLine();

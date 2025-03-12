@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BasePointGenerator.1bda164c-2fba-43e6-91bb-424ac2a31dac" Version="0.0.2" Language="en-US" Publisher="Elias da Silva Rita" />
+        <Identity Id="BasePointGenerator.1bda164c-2fba-43e6-91bb-424ac2a31dac" Version="0.0.3" Language="en-US" Publisher="Elias da Silva Rita" />
         <DisplayName>BasePoint generator</DisplayName>
         <Description xml:space="preserve">Generate clean architecture structure with BasePoint framework</Description>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
-        <Tags>C#, CSharp,Clean architecture, DDD, OOP, Repository, Unit Tests, Dapper, Productivity</Tags>
+        <Tags>C#, CSharp,Clean architecture, DDD, OOP, Repository, Unit Tests, Dapper, Productivity, Scaffolding</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
@@ -19,7 +19,7 @@
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="File" Path="ProjectTemplates" d:TargetPath="ProjectTemplates\BPTemplate.zip" />
     </Assets>
 </PackageManifest>
