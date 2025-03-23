@@ -77,11 +77,14 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Builders
 
             for (int i = 0; i < properties.Count; i++)
             {
-                var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
-                if (i + 1 != properties.Count)
-                    setValue = string.Concat(setValue, ",");
+                if (!properties[i].Name.Equals("Id") && !properties[i].Name.Equals("CreationDate"))
+                {
+                    var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
+                    if (i + 1 != properties.Count)
+                        setValue = string.Concat(setValue, ",");
 
-                content.AppendLine(setValue);
+                    content.AppendLine(setValue);
+                }
             }
 
             content.AppendLine("\t\t\t};");
@@ -96,7 +99,8 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Builders
 
             foreach (var property in properties)
             {
-                content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
+                if (!property.Name.Equals("Id") && !property.Name.Equals("CreationDate"))
+                    content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
             }
 
             content.AppendLine("\t\t}");
@@ -153,11 +157,6 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Builders
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

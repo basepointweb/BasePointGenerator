@@ -81,10 +81,12 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
 
             foreach (var item in properties)
             {
+                var idSuffix = item.IsSubClassOfBaseEntity ? "Id" : "";
+
                 content.AppendLine("\t\t\t\tnew DapperTableColumnDefinition");
                 content.AppendLine("\t\t\t\t{");
-                content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}\",");
-                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
+                content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}{idSuffix}\",");
+                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}{idSuffix}),");
                 content.Append($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
 
                 if (item.Type.ToUpper().Contains("STRING") || item.Type.ToUpper().Contains("CHAR"))

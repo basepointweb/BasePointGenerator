@@ -80,12 +80,17 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
             }
 
             for (int i = 0; i < propertiesToAdd.Count; i++)
             {
-                var setValue = $"\t\t\t\t{propertiesToAdd[i].Name} = _{propertiesToAdd[i].Name.GetWordWithFirstLetterDown()}";
+                if (propertiesToAdd[i].Name.Equals("CreationDate"))
+                    continue;
+
+                var idSuffix = propertiesToAdd[i].IsSubClassOfBaseEntity ? "Id" : "";
+
+                var setValue = $"\t\t\t\t{propertiesToAdd[i].Name}{idSuffix} = _{propertiesToAdd[i].Name.GetWordWithFirstLetterDown()}{idSuffix}";
                 if (i + 1 != propertiesToAdd.Count)
                     setValue = string.Concat(setValue, ",");
 
@@ -104,7 +109,14 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var property in properties)
             {
-                content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
+                var idSuffix = property.IsSubClassOfBaseEntity ? "Id" : "";
+
+                if (property.Name.Equals("CreationDate"))
+                    continue;
+
+                var propertyType = property.IsSubClassOfBaseEntity ? "Guid" : property.Type;
+
+                content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()}{idSuffix} = {FakeDataFactory.GetFakeValue(propertyType)}; // TODO: Use a valid default value of your domain.");
             }
 
             content.AppendLine("\t\t}");
@@ -125,12 +137,24 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name.GetWordWithFirstLetterDown()})");
-                content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
-                content.AppendLine("\t\t\treturn this;");
-                content.AppendLine("\t\t}");
-                content.AppendLine();
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\tpublic {className} With{item.Name}Id(Guid {item.Name.GetWordWithFirstLetterDown()}Id)");
+                    content.AppendLine("\t\t{");
+                    content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()}Id = {item.Name.GetWordWithFirstLetterDown()}Id;");
+                    content.AppendLine("\t\t\treturn this;");
+                    content.AppendLine("\t\t}");
+                    content.AppendLine();
+                }
+                else
+                {
+                    content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name.GetWordWithFirstLetterDown()})");
+                    content.AppendLine("\t\t{");
+                    content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
+                    content.AppendLine("\t\t\treturn this;");
+                    content.AppendLine("\t\t}");
+                    content.AppendLine();
+                }
             }
         }
 

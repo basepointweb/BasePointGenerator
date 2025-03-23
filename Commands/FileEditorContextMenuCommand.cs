@@ -28,6 +28,7 @@ namespace BasePointGenerator
 
             return null;
         }
+
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
@@ -42,13 +43,17 @@ namespace BasePointGenerator
 
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
-            frm.CodeGenerationService = new Services.CodeGenerationService(solution, GetSelectedFileName());
+            frm.BasePointTypeService = new Services.BasePointTypeService(_dte);
 
-            if (!frm.CodeGenerationService.OriginalFileContent.Contains("BaseEntity"))
+            var type = frm.BasePointTypeService.GetBasePointType(GetSelectedFileName());
+
+            if (type is null)
             {
-                await VS.MessageBox.ShowWarningAsync("BasePoint code generator", "Selected class must inherit from 'BaseEntity'");
+                await VS.MessageBox.ShowWarningAsync("BasePoint code generator", $"Must successfull build the project with type and generate dll for the assembly");
                 return;
             }
+
+            frm.CodeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
 
             frm.ClassProperties = frm.CodeGenerationService.Properties;
 
@@ -60,6 +65,30 @@ namespace BasePointGenerator
             frm.LBL_ClassProperties.Text = "Properties from " + frm.CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");
 
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+        }
+        private ProjectItem FindProjectItemRecursive(ProjectItems items, string filePath)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (items == null) return null;
+
+            foreach (ProjectItem item in items)
+            {
+                if (item.FileCount > 0)
+                {
+                    string projectFilePath = item.FileNames[0];
+                    if (string.Equals(filePath, projectFilePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return item; // Encontrou o arquivo!
+                    }
+                }
+
+                // Se o item contém sub-itens, busca recursivamente
+                ProjectItem foundItem = FindProjectItemRecursive(item.ProjectItems, filePath);
+                if (foundItem != null) return foundItem;
+            }
+
+            return null;
         }
     }
 }

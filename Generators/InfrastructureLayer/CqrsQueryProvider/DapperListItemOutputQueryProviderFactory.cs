@@ -164,7 +164,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsQueryProvider
             var propertiesToGenerateSelectedFields = new List<PropertyInfo>();
 
             if (!properties.Any(x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)))
-                propertiesToGenerateSelectedFields.Add(new PropertyInfo("Guid", "Id"));
+                propertiesToGenerateSelectedFields.Add(new PropertyInfo("Guid", "Id", false));
 
             propertiesToGenerateSelectedFields.AddRange(properties);
 

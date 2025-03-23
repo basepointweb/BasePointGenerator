@@ -9,7 +9,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 
 namespace BasePointGenerator
@@ -22,6 +24,7 @@ namespace BasePointGenerator
         private DTE2 _dte;
         public CodeGenerationService CodeGenerationService { get; set; }
         public IList<PropertyInfo> ClassProperties { get; set; }
+        public BasePointTypeService BasePointTypeService { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="frmCodeGenerationOptionsControl"/> class.
@@ -134,7 +137,16 @@ namespace BasePointGenerator
 
         private void BTN_Reload_Click(object sender, RoutedEventArgs e)
         {
-            CodeGenerationService.ReloadFileInformations();
+            var type = BasePointTypeService.GetBasePointType();
+
+            if (type is null)
+            {
+                VS.MessageBox.ShowWarning("BasePoint generator", "Type couldn't be reloaded");
+
+                return;
+            }
+
+            CodeGenerationService.LoadTypeInformation(type);
 
             var currentProperties = this.ClassProperties;
 
@@ -156,6 +168,7 @@ namespace BasePointGenerator
             BTN_Generate.IsEnabled = true;
             LBL_ClassProperties.Text = "Properties from " + CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");
         }
+
         private void SEL_GenerateAllUseCase_Checked(object sender, RoutedEventArgs e)
         {
             SEL_GenerateCreateUseCase.IsChecked = true;
@@ -218,6 +231,79 @@ namespace BasePointGenerator
         {
             if (e.Key == System.Windows.Input.Key.Space)
                 e.Handled = true;
+
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+
+                if (GRD_Properties?.CurrentCell != null)
+                {
+                    int targetColumnIndex = 2;
+
+                    int currentRow = GRD_Properties.Items.IndexOf(GRD_Properties.CurrentItem);
+
+                    if (currentRow < GRD_Properties.Items.Count - 1)
+                        currentRow = currentRow + 1;
+
+                    GRD_Properties.CurrentCell = new DataGridCellInfo(GRD_Properties.Items[currentRow], GRD_Properties.Columns[targetColumnIndex]);
+
+                    var property = (PropertyInfo)GRD_Properties.CurrentCell.Item;
+
+                    while (property.IsReadOnly)
+                    {
+                        currentRow = currentRow + 1;
+
+                        if (currentRow >= GRD_Properties.Items.Count - 1)
+                            return;
+
+                        GRD_Properties.CurrentCell = new DataGridCellInfo(GRD_Properties.Items[currentRow], GRD_Properties.Columns[targetColumnIndex]);
+
+                        property = (PropertyInfo)GRD_Properties.CurrentCell.Item;
+                    }
+
+                    GRD_Properties.BeginEdit();
+
+                    var cell = GetCell(GRD_Properties, currentRow, targetColumnIndex);
+                    if (cell != null)
+                    {
+                        var cellTextBox = FindVisualChild<System.Windows.Controls.TextBox>(cell);
+                        if (cellTextBox != null)
+                        {
+                            cellTextBox.Focus(); // Foca no TextBox dentro da célula
+                            cellTextBox.SelectAll(); // Seleciona o texto dentro do TextBox
+                        }
+                    }
+                }
+            }
+        }
+
+        private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                    return typedChild;
+
+                T descendant = FindVisualChild<T>(child);
+                if (descendant != null)
+                    return descendant;
+            }
+            return null;
+        }
+
+        private DataGridCell GetCell(DataGrid dataGrid, int row, int column)
+        {
+            DataGridRow dataGridRow = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(row);
+            if (dataGridRow != null)
+            {
+                DataGridCellsPresenter presenter = FindVisualChild<DataGridCellsPresenter>(dataGridRow);
+                if (presenter != null)
+                {
+                    return presenter.ItemContainerGenerator.ContainerFromIndex(column) as DataGridCell;
+                }
+            }
+            return null;
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)

@@ -30,6 +30,8 @@ namespace BasePointGenerator.Services
                     return "12345";
                 case "int":
                     return "123";
+                case "int32":
+                    return "123";
                 case "uint":
                     return "123u";
                 case "long":
@@ -46,6 +48,8 @@ namespace BasePointGenerator.Services
                     return "DateTime.Now";
                 case "datetimeoffset":
                     return "DateTimeOffset.Now";
+                case "guid":
+                    return "Guid.NewGuid()";
                 default:
                     return "default";
             }

@@ -104,7 +104,8 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             foreach (var item in properties)
             {
-                content.AppendLine(string.Concat($"\t\t\t{className.GetWordWithFirstLetterDown()}.{item.Name} = ", $"input.{item.Name};"));
+                if (!item.Name.Equals("Id") && !item.Name.Equals("CreationDate"))
+                    content.AppendLine(string.Concat($"\t\t\t{className.GetWordWithFirstLetterDown()}.{item.Name} = ", $"input.{item.Name};"));
             }
 
             content.AppendLine("");

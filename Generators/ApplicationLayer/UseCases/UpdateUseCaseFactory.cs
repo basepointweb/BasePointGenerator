@@ -104,7 +104,8 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             foreach (var item in properties)
             {
-                content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"input.{item.Name};"));
+                if (!item.Name.Equals("Id") && !item.Name.Equals("CreationDate"))
+                    content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"input.{item.Name};"));
             }
 
             content.AppendLine("");
@@ -156,28 +157,11 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
             return solution.Name.Replace(".sln", "");
         }
 
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
-        }
-
         private static string GetOriginalClassName(string fileContent)
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
             return regex.Groups["Name"].Value.Replace(":", "");
-        }
-
-        private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
-            {
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
         }
     }
 }

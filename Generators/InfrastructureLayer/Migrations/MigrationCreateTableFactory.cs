@@ -50,7 +50,17 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                     content.AppendLine($"  `{property.Name}` {GetMySqlPropertyType(property)},");
                 }
                 else
-                    content.AppendLine($"  `{property.Type}Id` VARCHAR(36) NOT NULL,");
+                {
+                    if (property.IsSubClassOfBaseEntity)
+                    {
+                        content.AppendLine($"  `{property.Name}Id` VARCHAR(36) NOT NULL,");
+                    }
+                    else
+                    {
+                        content.AppendLine($"  `{property.Type}Id` VARCHAR(36) NOT NULL,");
+                    }
+                }
+
             }
 
             var preventDuplicationProperties = propertiesToGenerateTableFields.Where(x => x.PreventDuplication)
@@ -70,7 +80,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
             {
                 var separator = (addedProperties > 0) ? "," : "";
 
-                content.AppendLine($"  CONSTRAINT `FK_{originalClassName}{property.Type}Id_{property.Type}` FOREIGN KEY (`{property.Type}Id`) REFERENCES `{property.Type}` (`Id`) ON UPDATE CASCADE{separator}");
+                content.AppendLine($"  CONSTRAINT `FK_{originalClassName}{property.Name}Id_{property.Type}` FOREIGN KEY (`{property.Name}Id`) REFERENCES `{property.Type}` (`Id`) ON UPDATE CASCADE{separator}");
 
                 addedProperties++;
             }
@@ -95,6 +105,9 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
 
             switch (type)
             {
+                case "GUID":
+                    mySqlType = $"VARCHAR({36})";
+                    break;
                 case "INT":
                     mySqlType = $"TINYINT";
                     break;
@@ -105,10 +118,10 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                     mySqlType = $"VARCHAR({1})";
                     break;
                 case "DECIMAL":
-                    mySqlType = $"DECIMAL({property.PropertySize},2)";
+                    mySqlType = $"DECIMAL({property.PropertySize},{property.DecimalPlaces})";
                     break;
                 case "FLOAT":
-                    mySqlType = $"FLOAT({property.PropertySize},2)";
+                    mySqlType = $"FLOAT({property.PropertySize},{property.DecimalPlaces})";
                     break;
                 case "BOOL":
                     mySqlType = $"BOOLEAN DEFAULT TRUE";

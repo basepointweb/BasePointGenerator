@@ -105,6 +105,9 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             foreach (PropertyInfo property in properties)
             {
+                if (property.Name.Equals("CreationDate") || property.Name.Equals("Id"))
+                    continue;
+
                 var propertyType = property.Type.ToUpper().Replace("?", "");
 
                 if (propertyType.Contains("NULLABLE"))
@@ -113,17 +116,19 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                 if (methodsAdded > 0)
                     content.AppendLine();
 
+                var idSuffix = property.IsSubClassOfBaseEntity ? "Id" : "";
+
                 content.AppendLine("\t\t[Fact]");
-                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
+                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}{idSuffix}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Create{className}InputBuilder()");
-                content.AppendLine($"\t\t\t\t.With{property.Name}({FakeDataFactory.GetFakeValue(property.Type)})");
+                content.AppendLine($"\t\t\t\t.With{property.Name}{idSuffix}({FakeDataFactory.GetFakeValue(property.Type)})");
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
-                content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}IsInvalid));");
+                content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}{idSuffix}IsInvalid));");
                 content.AppendLine("\t\t}");
 
                 if (propertyType == "STRING" && property.PropertySize > 0)
@@ -187,12 +192,6 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             return solution.Name.Replace(".sln", "");
         }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
-        }
-
         private static string GetOriginalClassName(string fileContent)
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");

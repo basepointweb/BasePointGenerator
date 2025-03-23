@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace BasePointGenerator
 {
-    public class StringTypeConverter : IValueConverter
+    public class DecimalTypeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -16,7 +16,7 @@ namespace BasePointGenerator
             if (typeValue.Contains("NULLABLE"))
                 typeValue = typeValue.SubstringsBetween("NULLABLE<", ">")[0];
 
-            return typeValue.ToUpper() == "STRING" ||
+            return
                 typeValue.ToUpper() == "DECIMAL" ||
                 typeValue.ToUpper() == "FLOAT";
         }

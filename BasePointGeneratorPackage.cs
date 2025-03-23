@@ -5,7 +5,10 @@ global using Task = System.Threading.Tasks.Task;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -22,10 +25,12 @@ namespace BasePointGenerator
     {
         protected uint solutionEventsCookie;
         protected IVsSolution solutionService;
-
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.RegisterCommandsAsync();
+
+            ExtractTypeAnalizerTool();
+
             await frmCodeGenerationOptionsCommand.InitializeAsync(this);
 
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -38,6 +43,61 @@ namespace BasePointGenerator
 
                 if (solution is not null && IsNewSolution(solution.FullPath))
                     await SetStartupProjectAsync(solution);
+            }
+        }
+
+        private static void ExtractTypeAnalizerTool()
+        {
+            string userAppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string extractPath = Path.Combine(userAppDataLocal, "BasePointGenerator");
+            string zipFilePath = Path.Combine(extractPath, "BasePointGeneratorAssemblyAnalizer.zip");
+
+            try
+            {
+
+                Directory.CreateDirectory(extractPath);
+
+                string embeddedZipPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ZippedTools\\BasePointGeneratorAssemblyAnalizer.zip");
+
+                if (File.Exists(embeddedZipPath))
+                {
+                    File.Copy(embeddedZipPath, zipFilePath, true);
+
+                    using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        {
+                            string fullPath = Path.Combine(extractPath, entry.FullName);
+
+                            if (entry.FullName.EndsWith("/"))
+                            {
+                                Directory.CreateDirectory(fullPath);
+                            }
+                            else
+                            {
+
+                                Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+
+                                if (File.Exists(fullPath))
+                                {
+                                    File.Delete(fullPath);
+                                }
+
+                                entry.ExtractToFile(fullPath);
+                            }
+                        }
+                    }
+
+                    Console.WriteLine("Arquivo ZIP extraído e descompactado com sucesso!");
+                }
+                else
+                {
+                    Console.WriteLine("Arquivo ZIP não encontrado no VSIX.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao descompactar o arquivo: {ex.Message}");
             }
         }
 

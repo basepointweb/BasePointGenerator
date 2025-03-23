@@ -45,6 +45,9 @@ namespace BasePointGenerator.Generators.Shared
 
             foreach (var property in properties)
             {
+                if (property.Name.Equals("CreationDate") || property.Name.Equals("Id"))
+                    continue;
+
                 var propertyType = property.Type.ToUpper().Replace("?", "");
 
                 if (propertyType.Contains("NULLABLE"))
@@ -75,13 +78,14 @@ namespace BasePointGenerator.Generators.Shared
                     if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;Another {originalClassName.GetWordWithFirstLetterDown()} with {property.Name.GetWordWithFirstLetterDown()} already exists.\";");
                 }
+                var idSuffix = property.IsSubClassOfBaseEntity ? "Id" : "";
 
                 if (options.GenerateCreateUseCase || options.GenerateUpdateUseCase)
                 {
-                    constantName = $"{originalClassName}{property.Name}IsInvalid";
+                    constantName = $"{originalClassName}{property.Name}{idSuffix}IsInvalid";
 
                     if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
-                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}{property.Name} is invalid.\";");
+                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}{property.Name}{idSuffix} is invalid.\";");
                 }
 
                 if (options.GenerateUpdateUseCase)

@@ -63,10 +63,18 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
         {
             foreach (var item in properties)
             {
-                if (item.Name.Equals("Id"))
-                    content.AppendLine("\t\t[JsonIgnore]");
+                if (item.Name.Equals("CreationDate"))
+                    continue;
 
-                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name}", " { get; init; }"));
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine(string.Concat($"\t\tpublic Guid {item.Name}Id", " { get; init; }"));
+                }
+                else
+                {
+                    if (!item.Name.Equals("Id"))
+                        content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name}", " { get; init; }"));
+                }
             }
         }
 
@@ -92,18 +100,6 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
             namespacePath = namespacePath.Substring(1, namespacePath.Length - caracteresDiference);
 
             return "namespace " + namespacePath;
-        }
-
-        private static string GetNameRootProjectName()
-        {
-            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
-
-            return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

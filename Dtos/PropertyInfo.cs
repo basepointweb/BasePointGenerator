@@ -10,11 +10,11 @@ namespace BasePointGenerator.Dtos
         {
             "BOOLEAN", "BYTE", "BYTE[]", "SBYTE", "CHAR",
             "DECIMAL","FLOAT", "DOUBLE", "SINGLE", "INT",
-            "INT32", "UINT32", "INT64", "UINT64",
+            "INT32", "UINT32", "INT64", "UINT64", "GUID",
             "INT16", "UINT16", "STRING", "DATETIME", "DATETIMEOFFSET", "TIMESPAN",
             "NULLABLE<BOOLEAN>", "NULLABLE<BYTE>", "NULLABLE<SBYTE>", "NULLABLE<CHAR>",
             "NULLABLE<DECIMAL>","NULLABLE<FLOAT>", "NULLABLE<DOUBLE>", "NULLABLE<SINGLE>", "NULLABLE<INT>",
-            "NULLABLE<INT32>", "NULLABLE<UINT32>", "NULLABLE<INT64>", "NULLABLE<UINT64>",
+            "NULLABLE<INT32>", "NULLABLE<UINT32>", "NULLABLE<INT64>", "NULLABLE<UINT64>","NULLABLE<GUID>",
             "NULLABLE<INT16>", "NULLABLE<UINT16>", "NULLABLE<STRING>", "NULLABLE<DATETIME>", "NULLABLE<DATETIMEOFFSET>","NULLABLE<TIMESPAN>",
         };
 
@@ -23,11 +23,43 @@ namespace BasePointGenerator.Dtos
         public bool GenerateGetMethodOnRepository { get; set; }
         public bool PreventDuplication { get; set; }
         public int PropertySize { get; set; }
-        public PropertyInfo(string type, string name)
+        public int DecimalPlaces { get; set; }
+        public int FieldWidth { get; set; }
+        public bool IsSubClassOfBaseEntity { get; set; }
+        public bool IsReadOnly
+        {
+            get
+            {
+                var formattedType = Type.ToUpper().Replace("?", "");
+
+                if (formattedType.ToUpper().Contains("NULLABLE"))
+                    formattedType = formattedType.ToUpper().SubstringsBetween("NULLABLE<", ">")[0];
+
+                return
+                    !formattedType.Equals("Decimal", StringComparison.OrdinalIgnoreCase) &&
+                    !formattedType.Equals("Float", StringComparison.OrdinalIgnoreCase) &&
+                    !formattedType.Equals("String", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        public bool IsDecimalPlacesVisible { get; set; }
+
+        public PropertyInfo(string type, string name, bool isSubClassOfBaseEntity)
         {
             Type = type;
             Name = name;
+            IsSubClassOfBaseEntity = isSubClassOfBaseEntity;
 
+            var formattedType = Type.ToUpper().Replace("?", "");
+
+            if (formattedType.ToUpper().Contains("NULLABLE"))
+                formattedType = formattedType.ToUpper().SubstringsBetween("NULLABLE<", ">")[0];
+
+            IsDecimalPlacesVisible =
+                formattedType.Equals("Decimal", StringComparison.OrdinalIgnoreCase) ||
+                formattedType.Equals("Float", StringComparison.OrdinalIgnoreCase);
+
+            FieldWidth = IsDecimalPlacesVisible ? 48 : 88;
         }
 
         public bool IsPrimitive()

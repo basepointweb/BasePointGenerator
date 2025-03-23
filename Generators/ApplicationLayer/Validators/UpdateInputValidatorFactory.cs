@@ -74,13 +74,16 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
             }
 
             int validationsAdded = 0;
 
             foreach (var item in propertiesToAdd)
             {
+                if (item.Name.Equals("CreationDate"))
+                    continue;
+
                 var propertyType = item.Type.ToUpper().Replace("?", "");
 
                 if (propertyType.Contains("NULLABLE"))
@@ -89,9 +92,11 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
                 if (validationsAdded > 0)
                     content.AppendLine("");
 
-                content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
+                var idSuffix = item.IsSubClassOfBaseEntity ? "Id" : "";
+
+                content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name}{idSuffix})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");
-                content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
+                content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}{idSuffix}IsInvalid.Format(v.{item.Name}{idSuffix}));");
 
                 if (propertyType == "STRING" && item.PropertySize > 0)
                 {
@@ -140,28 +145,11 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
             return solution.Name.Replace(".sln", "");
         }
 
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
-        }
-
         private static string GetOriginalClassName(string fileContent)
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
             return regex.Groups["Name"].Value.Replace(":", "");
-        }
-
-        private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
-            {
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
         }
     }
 }

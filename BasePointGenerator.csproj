@@ -4,6 +4,9 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -50,6 +53,7 @@
     <Compile Include="ConfigurationSettings\AppConfigurationSettings.cs" />
     <Compile Include="ConfigurationSettings\LoggingSettingsDto.cs" />
     <Compile Include="ConfigurationSettings\LogLevelDto.cs" />
+    <Compile Include="DecimalTypeConverter.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemEventScriptPackage.cs" />
     <Compile Include="Dtos\Postman\PostmanCollectionItemRequestUrlQuery.cs" />
     <Compile Include="Dtos\FileContentGenerationOptions.cs" />
@@ -104,6 +108,7 @@
     <Compile Include="Generators\UnitTests\ApplicationLayer\Validators\UpdateInputValidatorTestsFactory.cs" />
     <Compile Include="Generators\UnitTests\DomainLayer\Builders\EntityBuilderFactory.cs" />
     <Compile Include="Generators\UnitTests\DomainLayer\Entities\EntityTestsFactory.cs" />
+    <Compile Include="Services\BasePointTypeService.cs" />
     <Compile Include="Services\FakeDataFactory.cs" />
     <Compile Include="Services\FilesPathGeneratorService.cs" />
     <Compile Include="Services\CodeGenerationService.cs" />
@@ -134,6 +139,9 @@
   <ItemGroup>
     <Content Include="Resources\IconSmall.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="ZippedTools\BasePointGeneratorAssemblyAnalizer.zip">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\open.png" />
@@ -200,6 +208,12 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
+    <PackageReference Include="System.Collections">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Loader">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Xml.XDocument">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -211,6 +225,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup />
+  <Import Project="SharedProject\SharedProject.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

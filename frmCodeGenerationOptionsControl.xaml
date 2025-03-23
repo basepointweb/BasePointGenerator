@@ -13,6 +13,7 @@
              Height="Auto">
     <UserControl.Resources>
         <local:StringTypeConverter x:Key="StringTypeConverter"/>
+        <local:DecimalTypeConverter x:Key="DecimalTypeConverter"/>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="LightBlue" />
             <Setter Property="Template">
@@ -171,30 +172,53 @@
                                 <DataGridTemplateColumn Header="Property Size" Width="90" MinWidth="90" >
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox
-                                              Width="88"
-                                              PreviewTextInput="OnlyNumbers" PreviewKeyDown="BlockSpace" LostFocus="TextBox_LostFocus"
-                                              Text="{Binding PropertySize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center">
-                                                <TextBox.Style>
-                                                    <Style TargetType="TextBox">
-                                                        <!-- Padrão: Desabilitado -->
-                                                        <Setter Property="IsReadOnly" Value="True"/>
-                                                        <Setter Property="Background" Value="LightGray"/>
-                                                        <Setter Property="Foreground" Value="DarkGray"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBox
+                                                  Width="{Binding FieldWidth}"
+                                                  PreviewTextInput="OnlyNumbers" PreviewKeyDown="BlockSpace" LostFocus="TextBox_LostFocus"
+                                                  Text="{Binding PropertySize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  HorizontalAlignment="Left"
+                                                  VerticalAlignment="Center">
+                                                    <TextBox.Style>
+                                                        <Style TargetType="TextBox">
+                                                            <!-- Padrão: Desabilitado -->
+                                                            <Setter Property="IsReadOnly" Value="True"/>
+                                                            <Setter Property="Background" Value="LightGray"/>
+                                                            <Setter Property="Foreground" Value="DarkGray"/>                                                                                                         
 
-                                                        <Style.Triggers>
-                                                            <!-- Se for String, ativa edição e muda cor de fundo -->
-                                                            <DataTrigger Binding="{Binding Type, Converter={StaticResource StringTypeConverter}}" Value="True">
+                                                            <Style.Triggers>
+                                                                <!-- Se for String, ativa edição e muda cor de fundo -->
+                                                                <DataTrigger Binding="{Binding Type, Converter={StaticResource StringTypeConverter}}" Value="True">
+                                                                    <Setter Property="IsReadOnly" Value="False"/>
+                                                                    <Setter Property="Background" Value="White"/>
+                                                                    <Setter Property="Foreground" Value="Black"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBox.Style>
+                                                </TextBox>
+                                                <TextBox                              
+                                                   Width="40"
+                                                   MinWidth="30"
+                                                   PreviewTextInput="OnlyNumbers" PreviewKeyDown="BlockSpace" LostFocus="TextBox_LostFocus"
+                                                   Text="{Binding DecimalPlaces, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center">
+                                                            <TextBox.Style>
+                                                                <Style TargetType="TextBox">                                             
                                                                 <Setter Property="IsReadOnly" Value="False"/>
                                                                 <Setter Property="Background" Value="White"/>
                                                                 <Setter Property="Foreground" Value="Black"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBox.Style>
-                                            </TextBox>
+                                                                <Setter Property="Visibility" Value="Hidden"/>                                                                   
+                                                                    <Style.Triggers>                                     
+                                                                        <DataTrigger Binding="{Binding IsDecimalPlacesVisible}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBox.Style>
+                                                </TextBox>
+                                            </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

@@ -68,7 +68,17 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name}", " { get; init; }"));
+                if (item.Name.Equals("CreationDate"))
+                    continue;
+
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine(string.Concat($"\t\tpublic Guid {item.Name}Id", " { get; init; }"));
+                }
+                else
+                {
+                    content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} {item.Name}", " { get; init; }"));
+                }
             }
         }
 
@@ -96,35 +106,11 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
             return "namespace " + namespacePath;
         }
 
-        private static string GetNameRootProjectName()
-        {
-            var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
-
-            return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
-        }
-
         private static string GetOriginalClassName(string fileContent)
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");
 
             return regex.Groups["Name"].Value.Replace(":", "");
-        }
-
-        private static IList<PropertyInfo> GetPropertiesInfo(string fileContent)
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            foreach (Match item in Regex.Matches(fileContent, @"(?>public)\s+(?!class)((static|readonly)\s)?(?<Type>(\S+(?:<.+?>)?)(?=\s+\w+\s*\{\s*get))\s+(?<Name>[^\s]+)(?=\s*\{\s*get)"))
-            {
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
         }
     }
 }

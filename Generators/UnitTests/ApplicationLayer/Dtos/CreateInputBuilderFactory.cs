@@ -77,11 +77,24 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             for (int i = 0; i < properties.Count; i++)
             {
-                var setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
-                if (i + 1 != properties.Count)
-                    setValue = string.Concat(setValue, ",");
+                if (!properties[i].Name.Equals("Id") && !properties[i].Name.Equals("CreationDate"))
+                {
+                    var setValue = "";
 
-                content.AppendLine(setValue);
+                    if (properties[i].IsSubClassOfBaseEntity)
+                    {
+                        setValue = $"\t\t\t\t{properties[i].Name}Id = _{properties[i].Name.GetWordWithFirstLetterDown()}Id";
+                    }
+                    else
+                    {
+                        setValue = $"\t\t\t\t{properties[i].Name} = _{properties[i].Name.GetWordWithFirstLetterDown()}";
+                    }
+
+                    if (i + 1 != properties.Count)
+                        setValue = string.Concat(setValue, ",");
+
+                    content.AppendLine(setValue);
+                }
             }
 
             content.AppendLine("\t\t\t};");
@@ -96,7 +109,18 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var property in properties)
             {
-                content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
+                if (property.Name.Equals("CreationDate") || property.Name.Equals("Id"))
+                    continue;
+
+                if (property.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()}Id = {FakeDataFactory.GetFakeValue("Guid")}; // TODO: Use a valid default value of your domain.");
+                }
+                else
+                {
+                    content.AppendLine($"\t\t\t_{property.Name.GetWordWithFirstLetterDown()} = {FakeDataFactory.GetFakeValue(property.Type)}; // TODO: Use a valid default value of your domain.");
+                }
+
             }
 
             content.AppendLine("\t\t}");
@@ -107,12 +131,27 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
         {
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name.GetWordWithFirstLetterDown()})");
-                content.AppendLine("\t\t{");
-                content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
-                content.AppendLine("\t\t\treturn this;");
-                content.AppendLine("\t\t}");
-                content.AppendLine();
+                if (item.Name.Equals("CreationDate") || item.Name.Equals("Id"))
+                    continue;
+
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\tpublic {className} With{item.Name}Id(Guid {item.Name.GetWordWithFirstLetterDown()}Id)");
+                    content.AppendLine("\t\t{");
+                    content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()}Id = {item.Name.GetWordWithFirstLetterDown()}Id;");
+                    content.AppendLine("\t\t\treturn this;");
+                    content.AppendLine("\t\t}");
+                    content.AppendLine();
+                }
+                else
+                {
+                    content.AppendLine($"\t\tpublic {className} With{item.Name}({item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} {item.Name.GetWordWithFirstLetterDown()})");
+                    content.AppendLine("\t\t{");
+                    content.AppendLine($"\t\t\t_{item.Name.GetWordWithFirstLetterDown()} = {item.Name.GetWordWithFirstLetterDown()};");
+                    content.AppendLine("\t\t\treturn this;");
+                    content.AppendLine("\t\t}");
+                    content.AppendLine();
+                }
             }
         }
 
@@ -120,7 +159,17 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
         {
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} _{item.Name.GetWordWithFirstLetterDown()};");
+                if (item.Name.Equals("CreationDate") || item.Name.Equals("Id"))
+                    continue;
+
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\tprivate Guid _{item.Name.GetWordWithFirstLetterDown()}Id;");
+                }
+                else
+                {
+                    content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("Create", "Input")} _{item.Name.GetWordWithFirstLetterDown()};");
+                }
             }
         }
 
@@ -153,11 +202,6 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

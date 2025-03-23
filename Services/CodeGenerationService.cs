@@ -23,10 +23,10 @@ using BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators;
 using BasePointGenerator.Generators.UnitTests.DomainLayer.Builders;
 using BasePointGenerator.Generators.UnitTests.DomainLayer.Entities;
 using Newtonsoft.Json;
+using SharedProject;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace BasePointGenerator.Services
@@ -39,6 +39,7 @@ namespace BasePointGenerator.Services
         FileContentGenerationOptions options);
     public class CodeGenerationService
     {
+
         private readonly SolutionItensDto SolutionItens;
 
         private readonly FilesPathGeneratorService _filesPathGeneratorService;
@@ -49,7 +50,7 @@ namespace BasePointGenerator.Services
         public IList<PropertyInfo> Properties { get; protected set; }
         public IList<string> GeneratedFiles { get; protected set; }
 
-        public CodeGenerationService(Community.VisualStudio.Toolkit.Solution solution, string originalFileFullPath)
+        public CodeGenerationService(Community.VisualStudio.Toolkit.Solution solution, SharedProject.BasePointType type, string originalFileFullPath)
         {
             SolutionItens = new SolutionItensDto();
 
@@ -65,51 +66,18 @@ namespace BasePointGenerator.Services
             OriginalFilePath = Path.GetDirectoryName(originalFileFullPath);
             FileName = Path.GetFileName(originalFileFullPath);
 
-            Methods = GetMethodsInfo();
-            Properties = GetPropertiesInfo();
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name)).ToList();
+            Properties = type.Properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity)).ToList();
             GeneratedFiles = [];
         }
 
-        public IList<PropertyInfo> GetPropertiesInfo()
-        {
-            var propertyes = new List<PropertyInfo>();
-
-            var matches = Regex.Matches(OriginalFileContent, @"(?>public|protected|internal|private)\s+(static\s+|readonly\s+|virtual\s+|override\s+)*?(?<Type>\S+(?:<.+?>)?)\s+(?<Name>[^\s]+)(?=\s*\{\s*get)");
-
-            foreach (Match item in matches)
-            {
-                var type = item.Groups["Type"].Value;
-
-                propertyes.Add(new PropertyInfo(item.Groups["Type"].Value, item.Groups["Name"].Value));
-            }
-
-            return propertyes;
-        }
-
-        private IList<MethodInfo> GetMethodsInfo()
-        {
-            var propertyes = new List<MethodInfo>();
-
-            var matches = Regex.Matches(OriginalFileContent, @"\b(public|internal|static|sealed|virtual|override|async)*\s*(\w+<.*?>|\w+)\s+(\w+)\s*\(.*?\)");
-
-            foreach (Match item in matches)
-            {
-                propertyes.Add(new MethodInfo(item.Groups[2].Value, item.Groups[3].Value));
-            }
-
-            return propertyes;
-        }
-
-        public void ReloadFileInformations()
+        public void LoadTypeInformation(BasePointType type)
         {
             OriginalFileContent = System.IO.File.ReadAllText(Path.Combine(OriginalFilePath, FileName));
             FileName = Path.GetFileName(FileName);
 
-            Methods = GetMethodsInfo();
-            Properties = GetPropertiesInfo();
-
-            Methods = GetMethodsInfo();
-            Properties = GetPropertiesInfo();
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name)).ToList();
+            Properties = type.Properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity)).ToList();
         }
 
         public void GenerateFiles(

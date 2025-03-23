@@ -106,13 +106,16 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id"));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
             }
 
             int methodsAdded = 0;
 
             foreach (PropertyInfo property in propertiesToAdd)
             {
+                if (property.Name.Equals("CreationDate"))
+                    continue;
+
                 var propertyType = property.Type.ToUpper().Replace("?", "");
 
                 if (propertyType.Contains("NULLABLE"))
@@ -121,18 +124,20 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                 if (methodsAdded > 0)
                     content.AppendLine();
 
+                var idSuffix = property.IsSubClassOfBaseEntity ? "Id" : "";
+
                 content.AppendLine("\t\t[Fact]");
-                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}IsInvalid_ReturnsIsInvalid()");
+                content.AppendLine($"\t\tpublic void Validate_Input{property.Name}{idSuffix}IsInvalid_ReturnsIsInvalid()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
 
                 if (property.Type == "Guid")
                 {
-                    content.AppendLine($"\t\t\t\t.With{property.Name}(Guid.Empty)");
+                    content.AppendLine($"\t\t\t\t.With{property.Name}{idSuffix}(Guid.Empty)");
                 }
                 else
                 {
-                    content.AppendLine($"\t\t\t\t.With{property.Name}({FakeDataFactory.GetFakeValue(property.Type)})");
+                    content.AppendLine($"\t\t\t\t.With{property.Name}{idSuffix}({FakeDataFactory.GetFakeValue(property.Type)})");
                 }
 
                 content.AppendLine($"\t\t\t\t.Build();");

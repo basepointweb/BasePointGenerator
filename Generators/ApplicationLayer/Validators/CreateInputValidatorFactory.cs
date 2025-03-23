@@ -74,6 +74,9 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
 
             foreach (var item in properties)
             {
+                if (item.Name.Equals("Id") || item.Name.Equals("CreationDate"))
+                    continue;
+
                 var propertyType = item.Type.ToUpper().Replace("?", "");
 
                 if (propertyType.Contains("NULLABLE"))
@@ -82,9 +85,11 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Validators
                 if (validationsAdded > 0)
                     content.AppendLine("");
 
-                content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name})");
+                var idSuffix = item.IsSubClassOfBaseEntity ? "Id" : "";
+
+                content.AppendLine($"\t\t\tRuleFor(v => v.{item.Name}{idSuffix})");
                 content.AppendLine($"\t\t\t\t.NotEmpty()");
-                content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}IsInvalid.Format(v.{item.Name}));");
+                content.AppendLine($"\t\t\t\t.WithMessage(v => SharedConstants.ErrorMessages.{originalClassName}{item.Name}{idSuffix}IsInvalid.Format(v.{item.Name}{idSuffix}));");
 
                 if (propertyType == "STRING" && item.PropertySize > 0)
                 {

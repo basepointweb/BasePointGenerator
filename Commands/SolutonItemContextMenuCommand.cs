@@ -43,13 +43,17 @@ namespace BasePointGenerator
 
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
-            frm.CodeGenerationService = new Services.CodeGenerationService(solution, GetSelectedFileName());
+            frm.BasePointTypeService = new Services.BasePointTypeService(_dte);
 
-            if (!frm.CodeGenerationService.OriginalFileContent.Contains("BaseEntity"))
+            var type = frm.BasePointTypeService.GetBasePointType(GetSelectedFileName());
+
+            if (type is null)
             {
-                await VS.MessageBox.ShowWarningAsync("BasePoint code generator", "Selected class must inherit from 'BaseEntity'");
+                await VS.MessageBox.ShowWarningAsync("BasePoint code generator", $"Must successfull build the project with type and generate dll for the assembly");
                 return;
             }
+
+            frm.CodeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
 
             frm.ClassProperties = frm.CodeGenerationService.Properties;
 
