@@ -1,6 +1,7 @@
 ﻿using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
 
 namespace BasePointGenerator
 {
@@ -57,12 +58,18 @@ namespace BasePointGenerator
 
             frm.ClassProperties = frm.CodeGenerationService.Properties;
 
+            if (frm.ClassProperties.Any(p => p.IsSubClassOfBaseEntity))
+            {
+                await VS.MessageBox.ShowWarningAsync("BasePoint code generator", $"If the code for BaseEntity-derived property types hasn't been generated yet," +
+                    $" it's recommended to generate it first, as {frm.CodeGenerationService.ClassName} generated code will depend on these classes, including repositories.");
+            }
+
             frm.GRD_Properties.ItemsSource = frm.ClassProperties;
             frm.BTN_Generate.IsEnabled = true;
             frm.BTN_Reload.IsEnabled = true;
             frm.PNL_InstructionsToLoadClass.Visibility = System.Windows.Visibility.Hidden;
             frm.PNL_GenerateClasses.Visibility = System.Windows.Visibility.Visible;
-            frm.LBL_ClassProperties.Text = "Properties from " + frm.CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");
+            frm.LBL_ClassProperties.Text = "Properties from " + frm.CodeGenerationService.ClassName;
 
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }

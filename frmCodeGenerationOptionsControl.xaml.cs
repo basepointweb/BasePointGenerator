@@ -164,9 +164,15 @@ namespace BasePointGenerator
                 }
             }
 
+            if (ClassProperties.Any(p => p.IsSubClassOfBaseEntity))
+            {
+                VS.MessageBox.ShowWarning("BasePoint code generator", $"If the code for BaseEntity-derived property types hasn't been generated yet," +
+                   $" it's recommended to generate it first, as {CodeGenerationService.ClassName} generated code will depend on these classes, including repositories.");
+            }
+
             GRD_Properties.ItemsSource = this.ClassProperties;
             BTN_Generate.IsEnabled = true;
-            LBL_ClassProperties.Text = "Properties from " + CodeGenerationService.FileName.Replace(":", "").Replace(".cs", "");
+            LBL_ClassProperties.Text = "Properties from " + CodeGenerationService.ClassName;
         }
 
         private void SEL_GenerateAllUseCase_Checked(object sender, RoutedEventArgs e)

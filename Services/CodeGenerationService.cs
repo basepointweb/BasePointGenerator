@@ -46,6 +46,7 @@ namespace BasePointGenerator.Services
         public string OriginalFilePath { get; protected set; }
         public string OriginalFileContent { get; protected set; }
         public string FileName { get; protected set; }
+        public string ClassName { get; protected set; }
         public IList<MethodInfo> Methods { get; protected set; }
         public IList<PropertyInfo> Properties { get; protected set; }
         public IList<string> GeneratedFiles { get; protected set; }
@@ -65,6 +66,7 @@ namespace BasePointGenerator.Services
 
             OriginalFilePath = Path.GetDirectoryName(originalFileFullPath);
             FileName = Path.GetFileName(originalFileFullPath);
+            ClassName = FileName.Replace(":", "").Replace(".cs", "");
 
             var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate"));
 

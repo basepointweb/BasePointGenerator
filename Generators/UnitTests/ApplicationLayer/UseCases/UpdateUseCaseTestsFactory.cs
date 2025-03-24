@@ -1,6 +1,7 @@
 ﻿using BasePointGenerator.Dtos;
 using BasePointGenerator.Exceptions;
 using BasePointGenerator.Extensions;
+using BasePointGenerator.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -125,7 +126,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"\t\tpublic async Task Execute_EverythingIsOk_ReturnsSuccess()");
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
-            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
+            content.AppendLine($"\t\t\t\t.With{firstProperty.Name}({FakeDataFactory.GetFakeValue(firstProperty.Type)})");
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\tvar previous{className} = new {className}Builder()");
@@ -215,7 +216,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
                 content.AppendLine($"\t\tpublic async Task Execute_AlreadyExistsAnother{className}With{property.Name}_ReturnsError()");
                 content.AppendLine("\t\t{");
                 content.AppendLine($"\t\t\tvar input = new Update{className}InputBuilder()");
-                content.AppendLine($"\t\t\t\t.With{firstProperty.Name}(\"{firstProperty.Name} value Test\")");
+                content.AppendLine($"\t\t\t\t.With{firstProperty.Name}({FakeDataFactory.GetFakeValue(property.Type)})");
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}Builder()");
