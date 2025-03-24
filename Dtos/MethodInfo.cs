@@ -5,10 +5,13 @@
         public string Type { get; }
         public string Name { get; }
 
-        public MethodInfo(string type, string name)
+        public bool DeclaredInBaseEntity { get; set; }
+
+        public MethodInfo(string type, string name, bool declaredInBaseEntity)
         {
             Type = type;
             Name = name;
+            DeclaredInBaseEntity = declaredInBaseEntity;
         }
     }
 }

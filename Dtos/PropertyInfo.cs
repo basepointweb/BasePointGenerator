@@ -26,6 +26,7 @@ namespace BasePointGenerator.Dtos
         public int DecimalPlaces { get; set; }
         public int FieldWidth { get; set; }
         public bool IsSubClassOfBaseEntity { get; set; }
+        public bool DeclaredInBaseEntity { get; set; }
         public bool IsReadOnly
         {
             get
@@ -44,11 +45,12 @@ namespace BasePointGenerator.Dtos
 
         public bool IsDecimalPlacesVisible { get; set; }
 
-        public PropertyInfo(string type, string name, bool isSubClassOfBaseEntity)
+        public PropertyInfo(string type, string name, bool isSubClassOfBaseEntity, bool declaredInBaseEntity)
         {
             Type = type;
             Name = name;
             IsSubClassOfBaseEntity = isSubClassOfBaseEntity;
+            DeclaredInBaseEntity = declaredInBaseEntity;
 
             var formattedType = Type.ToUpper().Replace("?", "");
 

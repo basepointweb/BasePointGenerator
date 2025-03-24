@@ -66,8 +66,10 @@ namespace BasePointGenerator.Services
             OriginalFilePath = Path.GetDirectoryName(originalFileFullPath);
             FileName = Path.GetFileName(originalFileFullPath);
 
-            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name)).ToList();
-            Properties = type.Properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity)).ToList();
+            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate"));
+
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name, m.DeclaredInBaseEntity)).ToList();
+            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
             GeneratedFiles = [];
         }
 
@@ -76,8 +78,10 @@ namespace BasePointGenerator.Services
             OriginalFileContent = System.IO.File.ReadAllText(Path.Combine(OriginalFilePath, FileName));
             FileName = Path.GetFileName(FileName);
 
-            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name)).ToList();
-            Properties = type.Properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity)).ToList();
+            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate"));
+
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name, m.DeclaredInBaseEntity)).ToList();
+            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
         }
 
         public void GenerateFiles(

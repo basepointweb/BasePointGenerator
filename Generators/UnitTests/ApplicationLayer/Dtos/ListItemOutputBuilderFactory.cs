@@ -80,7 +80,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false, true));
             }
 
             for (int i = 0; i < propertiesToAdd.Count; i++)
@@ -168,7 +168,15 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} _{item.Name.GetWordWithFirstLetterDown()};");
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\tprivate Guid _{item.Name.GetWordWithFirstLetterDown()}Id;");
+                }
+                else
+                {
+                    content.AppendLine($"\t\tprivate {item.GetTypeConvertingToDtoWhenIsComplex("", "ListItemOutput")} _{item.Name.GetWordWithFirstLetterDown()};");
+                }
+
             }
         }
 

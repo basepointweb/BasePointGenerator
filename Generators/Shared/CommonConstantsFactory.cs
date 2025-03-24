@@ -95,6 +95,14 @@ namespace BasePointGenerator.Generators.Shared
                     if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}Id is invalid.\";");
                 }
+
+                if (property.IsSubClassOfBaseEntity)
+                {
+                    constantName = $"{property.Type}WithIdDoesNotExists";
+
+                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                        newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{property.Type} with id does not exists.\";");
+                }
             }
 
             int insertIndex = constantsFileContent.IndexOf("ErrorMessages") + "ErrorMessages".Length;

@@ -60,9 +60,9 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
 
             content.AppendLine("\t{");
 
-            GeneratePrivateVariables(content, originalClassName);
+            GeneratePrivateVariables(content, originalClassName, properties);
 
-            GenerateTestConstructor(content, originalClassName, newClassName);
+            GenerateTestConstructor(content, originalClassName, newClassName, properties);
 
             GenerateInternalExecuteMethod(content, originalClassName, properties);
 
@@ -79,7 +79,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateTestConstructor(StringBuilder content, string originalClassName, string newClassName)
+        private static void GenerateTestConstructor(StringBuilder content, string originalClassName, string newClassName, IList<PropertyInfo> properties)
         {
             content.AppendLine();
             content.AppendLine($"\t\tpublic {newClassName}()");
@@ -87,7 +87,31 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"\t\t\t_unitOfWork = new Mock<IUnitOfWork>();");
             content.AppendLine($"\t\t\t_validator = new Mock<IValidator<Create{originalClassName}Input>>();");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = new Mock<I{originalClassName}Repository>();");
-            content.AppendLine($"\t\t\t_useCase = new Create{originalClassName}UseCase(_validator.Object, _{originalClassName.GetWordWithFirstLetterDown()}Repository.Object, _unitOfWork.Object);");
+
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryVar = $"{property.Type.GetWordWithFirstLetterDown()}Repository = new Mock<I{property.Type}Repository>();";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t_{repositoryVar}");
+            }
+
+            content.AppendLine();
+            content.AppendLine($"\t\t\t_useCase = new Create{originalClassName}UseCase(");
+            content.AppendLine($"\t\t\t\t_validator.Object,");
+            content.AppendLine($"\t\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository.Object,");
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryVar = $"{property.Type.GetWordWithFirstLetterDown()}Repository.Object,";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t\t_{repositoryVar}");
+            }
+
+            content.AppendLine($"\t\t\t\t_unitOfWork.Object);");
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
@@ -111,7 +135,27 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
             content.AppendLine("");
 
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
             int testsMethodsAdded = 0;
+
+            foreach (var property in nestedProperties)
+            {
+                if (testsMethodsAdded > 0)
+                    content.AppendLine();
+
+                content.AppendLine($"\t\t\tvar {property.Type.GetWordWithFirstLetterDown()} = new {property.Type}Builder()");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine();
+                content.AppendLine($"\t\t\t_{property.Type.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.{property.Name}Id))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync({property.Type.GetWordWithFirstLetterDown()});");
+
+                testsMethodsAdded++;
+
+                content.AppendLine();
+            }
+
+            testsMethodsAdded = 0;
 
             foreach (var property in propertiesToPreventDuplication)
             {
@@ -130,8 +174,6 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine("");
             content.AppendLine("\t\t\toutput.HasErros.Should().BeFalse();");
             content.AppendLine("\t\t}");
-
-
 
             if (propertiesToPreventDuplication.Count > 0)
                 content.AppendLine();
@@ -166,12 +208,22 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             }
         }
 
-        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
+        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
         {
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
             content.AppendLine($"\t\tprivate readonly Create{originalClassName}UseCase _useCase;");
             content.AppendLine($"\t\tprivate readonly Mock<IUnitOfWork> _unitOfWork;");
             content.AppendLine($"\t\tprivate readonly Mock<IValidator<Create{originalClassName}Input>> _validator;");
             content.AppendLine($"\t\tprivate readonly Mock<I{originalClassName}Repository> _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryVar = $"I{property.Type}Repository> _{property.Type.GetWordWithFirstLetterDown()}Repository;";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\tprivate readonly Mock<{repositoryVar}");
+            }
         }
 
         private static string GetNameSpace(string filePath)

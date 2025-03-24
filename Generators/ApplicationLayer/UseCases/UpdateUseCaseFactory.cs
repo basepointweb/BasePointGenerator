@@ -53,9 +53,9 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             content.AppendLine("\t{");
 
-            GeneratePrivateVariables(content, originalClassName);
+            GeneratePrivateVariables(content, originalClassName, properties);
 
-            GenerateRepositoryConstructor(content, originalClassName, newClassName);
+            GenerateRepositoryConstructor(content, originalClassName, newClassName, properties);
 
             GenerateInternalExecuteMethod(content, originalClassName, properties);
 
@@ -72,13 +72,37 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 throw new ValidationException("The file selected is not valid.");
         }
 
-        private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName)
+        private static void GenerateRepositoryConstructor(StringBuilder content, string originalClassName, string newClassName, IList<PropertyInfo> properties)
         {
             content.AppendLine();
-            content.AppendLine($"\t\tpublic {newClassName}(IValidator<Update{originalClassName}Input> validator, I{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository, IUnitOfWork unitOfWork) : base(unitOfWork)");
+            content.AppendLine($"\t\tpublic {newClassName}(");
+            content.AppendLine($"\t\t\tIValidator<Update{originalClassName}Input> validator,");
+            content.AppendLine($"\t\t\tI{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository,");
+
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryVar = $"I{property.Type}Repository {property.Type.GetWordWithFirstLetterDown()}Repository,";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t{repositoryVar}");
+            }
+
+            content.AppendLine($"\t\t\tIUnitOfWork unitOfWork) : base(unitOfWork)");
+
             content.AppendLine("\t\t{");
             content.AppendLine($"\t\t\t_validator = validator;");
             content.AppendLine($"\t\t\t_{originalClassName.GetWordWithFirstLetterDown()}Repository = {originalClassName.GetWordWithFirstLetterDown()}Repository;");
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryVar = $"_{property.Type.GetWordWithFirstLetterDown()}Repository = {property.Type.GetWordWithFirstLetterDown()}Repository";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t_{property.Type.GetWordWithFirstLetterDown()}Repository = {property.Type.GetWordWithFirstLetterDown()}Repository;");
+            }
+
             content.AppendLine("\t\t}");
             content.AppendLine();
         }
@@ -102,10 +126,28 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 content.AppendLine("");
             }
 
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in nestedProperties)
+            {
+                content.AppendLine($"\t\t\tvar selected{property.Name} = _{property.Type.GetWordWithFirstLetterDown()}Repository.GetById(input.{property.Name}Id).Result");
+                content.AppendLine($"\t\t\t\t.ThrowResourceNotFoundIfIsNull(SharedConstants.ErrorMessages.{property.Type}WithIdDoesNotExists.Format(input.{property.Name}Id));");
+                content.AppendLine("");
+            }
+
             foreach (var item in properties)
             {
-                if (!item.Name.Equals("Id") && !item.Name.Equals("CreationDate"))
+                if (item.Name.Equals("Id") || item.Name.Equals("CreationDate"))
+                    continue;
+
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"selected{item.Name};"));
+                }
+                else
+                {
                     content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"input.{item.Name};"));
+                }
             }
 
             content.AppendLine("");
@@ -118,10 +160,22 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
             content.AppendLine("\t\t}");
         }
 
-        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName)
+        private static void GeneratePrivateVariables(StringBuilder content, string originalClassName, IList<PropertyInfo> properties)
         {
             content.AppendLine($"\t\tprivate readonly IValidator<Update{originalClassName}Input> _validator;");
+
             content.AppendLine($"\t\tprivate readonly I{originalClassName}Repository _{originalClassName.GetWordWithFirstLetterDown()}Repository;");
+
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in nestedProperties)
+            {
+                var repositoryClassName = $"I{property.Type}Repository";
+
+                if (!content.ToString().Contains(repositoryClassName))
+                    content.AppendLine($"\t\tprivate readonly {repositoryClassName} _{property.Type.GetWordWithFirstLetterDown()}Repository;");
+            }
+
             content.AppendLine($"");
             content.AppendLine($"\t\tprotected override string SaveChangesErrorMessage => \"An error occurred while updating the {originalClassName.GetWordWithFirstLetterDown()}.\";");
         }

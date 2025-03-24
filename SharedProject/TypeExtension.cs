@@ -69,7 +69,7 @@ namespace SharedProject
                     }
                 }
 
-                basePointType.AddPropertyIfNotExists(new BasePointProperty(property.Name, propertyType));
+                basePointType.AddPropertyIfNotExists(new BasePointProperty(property.Name, propertyType, property.DeclaringType.Name == "BaseEntity"));
 
                 if (instances is not null)
                 {
@@ -102,7 +102,7 @@ namespace SharedProject
                     }
                 }
 
-                basePointType.AddMethodIfNotExists(new BasePointMethod(method.Name, method.IsSpecialName, methodReturnType));
+                basePointType.AddMethodIfNotExists(new BasePointMethod(method.Name, method.IsSpecialName, method.DeclaringType.Name == "BaseEntity", methodReturnType));
 
                 if (instances is not null)
                 {

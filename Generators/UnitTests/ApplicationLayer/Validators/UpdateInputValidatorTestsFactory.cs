@@ -106,7 +106,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false, true));
             }
 
             int methodsAdded = 0;

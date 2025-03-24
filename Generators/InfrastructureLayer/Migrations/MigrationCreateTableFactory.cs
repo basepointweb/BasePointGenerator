@@ -53,7 +53,10 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                 {
                     if (property.IsSubClassOfBaseEntity)
                     {
-                        content.AppendLine($"  `{property.Name}Id` VARCHAR(36) NOT NULL,");
+                        var isAutoReference = property.Type == originalClassName;
+                        var nullability = isAutoReference ? "NULL" : "NOT NULL";
+
+                        content.AppendLine($"  `{property.Name}Id` VARCHAR(36) {nullability},");
                     }
                     else
                     {

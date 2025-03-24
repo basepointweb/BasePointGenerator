@@ -80,7 +80,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false, true));
             }
 
             for (int i = 0; i < propertiesToAdd.Count; i++)
