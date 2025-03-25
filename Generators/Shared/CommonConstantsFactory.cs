@@ -62,7 +62,7 @@ namespace BasePointGenerator.Generators.Shared
 
                     constantName = $"{originalClassName}{property.Name}MaximumLength";
 
-                    if (!constantsFileContent.Contains(constantName) && !restrictions.ToString().Contains(constantName))
+                    if (!constantsFileContent.Contains($"readonly string {constantName}") && !restrictions.ToString().Contains(constantName))
                         restrictions.AppendLine($"\t\t\tpublic static readonly int {constantName} = {property.PropertySize};");
                 }
 
@@ -70,7 +70,7 @@ namespace BasePointGenerator.Generators.Shared
                 {
                     constantName = $"A{originalClassName}With{property.Name}AlreadyExists";
 
-                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                    if (!constantsFileContent.Contains($"readonly string {constantName}") && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;A {originalClassName.GetWordWithFirstLetterDown()} with {property.Name.GetWordWithFirstLetterDown()} already exists.\";");
 
                     constantName = $"Another{originalClassName}With{property.Name}AlreadyExists";
@@ -84,7 +84,7 @@ namespace BasePointGenerator.Generators.Shared
                 {
                     constantName = $"{originalClassName}{property.Name}{idSuffix}IsInvalid";
 
-                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                    if (!constantsFileContent.Contains($"readonly string {constantName}") && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}{property.Name}{idSuffix} is invalid.\";");
                 }
 
@@ -92,7 +92,7 @@ namespace BasePointGenerator.Generators.Shared
                 {
                     constantName = $"{originalClassName}IdIsInvalid";
 
-                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                    if (!constantsFileContent.Contains($"readonly string {constantName}") && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}Id is invalid.\";");
                 }
 
@@ -100,7 +100,7 @@ namespace BasePointGenerator.Generators.Shared
                 {
                     constantName = $"{property.Type}WithIdDoesNotExists";
 
-                    if (!constantsFileContent.Contains(constantName) && !newErrorMessages.ToString().Contains(constantName))
+                    if (!constantsFileContent.Contains($"readonly string {constantName}") && !newErrorMessages.ToString().Contains(constantName))
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{property.Type} with id does not exists.\";");
                 }
             }

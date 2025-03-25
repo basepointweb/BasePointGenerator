@@ -143,7 +143,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
                 content.AppendLine($"\t\t\t\t.Build();");
                 content.AppendLine("");
                 content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
-                content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}IsInvalid));");
+                content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{property.Name}{idSuffix}IsInvalid));");
                 content.AppendLine("");
                 content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeFalse();");
                 content.AppendLine("\t\t}");

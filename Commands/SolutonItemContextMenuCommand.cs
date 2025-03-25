@@ -44,9 +44,9 @@ namespace BasePointGenerator
 
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
-            frm.BasePointTypeService = new Services.BasePointTypeService(_dte);
+            var basePointTypeService = new Services.BasePointTypeService(_dte);
 
-            var type = frm.BasePointTypeService.GetBasePointType(GetSelectedFileName());
+            var type = basePointTypeService.GetBasePointType(GetSelectedFileName());
 
             if (type is null)
             {
@@ -54,7 +54,11 @@ namespace BasePointGenerator
                 return;
             }
 
-            frm.CodeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
+            var codeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
+
+            frm.BasePointTypeService = basePointTypeService;
+
+            frm.CodeGenerationService = codeGenerationService;
 
             frm.ClassProperties = frm.CodeGenerationService.Properties;
 

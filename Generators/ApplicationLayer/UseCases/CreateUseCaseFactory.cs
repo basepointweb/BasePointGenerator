@@ -42,6 +42,17 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
+
+            foreach (var property in nestedProperties)
+            {
+                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{property.Type.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

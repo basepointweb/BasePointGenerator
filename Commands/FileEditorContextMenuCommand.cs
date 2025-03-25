@@ -44,9 +44,11 @@ namespace BasePointGenerator
 
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
-            frm.BasePointTypeService = new Services.BasePointTypeService(_dte);
+            var basePointTypeService = new Services.BasePointTypeService(_dte);
 
-            var type = frm.BasePointTypeService.GetBasePointType(GetSelectedFileName());
+            var type = basePointTypeService.GetBasePointType(GetSelectedFileName());
+
+            frm.BasePointTypeService = basePointTypeService;
 
             if (type is null)
             {
@@ -54,7 +56,9 @@ namespace BasePointGenerator
                 return;
             }
 
-            frm.CodeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
+            var codeGenerationService = new Services.CodeGenerationService(solution, type, GetSelectedFileName());
+
+            frm.CodeGenerationService = codeGenerationService;
 
             frm.ClassProperties = frm.CodeGenerationService.Properties;
 
@@ -86,11 +90,10 @@ namespace BasePointGenerator
                     string projectFilePath = item.FileNames[0];
                     if (string.Equals(filePath, projectFilePath, StringComparison.OrdinalIgnoreCase))
                     {
-                        return item; // Encontrou o arquivo!
+                        return item;
                     }
                 }
 
-                // Se o item contém sub-itens, busca recursivamente
                 ProjectItem foundItem = FindProjectItemRecursive(item.ProjectItems, filePath);
                 if (foundItem != null) return foundItem;
             }

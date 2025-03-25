@@ -33,6 +33,17 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
             var content = new StringBuilder();
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
+
+            foreach (var property in nestedProperties)
+            {
+                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{property.Type.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
 
             fileContent = fileContent.Substring(content.Length);
@@ -75,8 +86,17 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name};"));
+                if (item.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"new {item.Type}Output({originalClassName.GetWordWithFirstLetterDown()}.{item.Name});"));
+                }
+                else
+                {
+                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name};"));
+                }
+
             }
+
             content.AppendLine("\t\t}");
         }
 

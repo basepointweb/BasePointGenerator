@@ -50,6 +50,21 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"using FluentValidation;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
 
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
+
+            foreach (var property in nestedProperties)
+            {
+                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{property.Type.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+
+                namespaceUsing = $"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders.{property.Type.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
