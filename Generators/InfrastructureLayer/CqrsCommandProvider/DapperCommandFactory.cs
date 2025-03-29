@@ -115,11 +115,6 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsCommandProvider
             return solution.Name.Replace(".sln", "");
         }
 
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
-        }
-
         private static string GetOriginalClassName(string fileContent)
         {
             var regex = Regex.Match(fileContent, @"\s+(class)\s+(?<Name>[^\s]+)");

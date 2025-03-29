@@ -81,9 +81,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
 
             foreach (var property in nestedProperties)
             {
-                var separator = (addedProperties > 0) ? "," : "";
-
-                content.AppendLine($"  CONSTRAINT `FK_{originalClassName}{property.Name}Id_{property.Type}` FOREIGN KEY (`{property.Name}Id`) REFERENCES `{property.Type}` (`Id`) ON UPDATE CASCADE{separator}");
+                content.AppendLine($"  CONSTRAINT `FK_{originalClassName}{property.Name}Id_{property.Type}` FOREIGN KEY (`{property.Name}Id`) REFERENCES `{property.Type}` (`Id`) ON UPDATE CASCADE,");
 
                 addedProperties++;
             }
@@ -112,6 +110,9 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.Migrations
                     mySqlType = $"VARCHAR({36})";
                     break;
                 case "INT":
+                    mySqlType = $"TINYINT";
+                    break;
+                case "INT32":
                     mySqlType = $"TINYINT";
                     break;
                 case "STRING":

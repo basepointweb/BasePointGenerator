@@ -82,12 +82,11 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
             foreach (var item in properties)
             {
                 var idSuffix = item.IsSubClassOfBaseEntity ? "Id" : "";
-                var idClassSuffix = item.IsSubClassOfBaseEntity ? "." : "";
 
                 content.AppendLine("\t\t\t\tnew DapperTableColumnDefinition");
                 content.AppendLine("\t\t\t\t{");
                 content.AppendLine($"\t\t\t\t\tDbFieldName = \"{item.Name}{idSuffix}\",");
-                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}{idClassSuffix}{idSuffix}),");
+                content.AppendLine($"\t\t\t\t\tEntityFieldName = nameof({originalClassName}.{item.Name}),");
                 content.Append($"\t\t\t\t\tType = DbType.{GetDbTypeName(item.Type)}");
 
                 if (item.Type.ToUpper().Contains("STRING") || item.Type.ToUpper().Contains("CHAR"))
@@ -116,9 +115,12 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
             return type switch
             {
                 "string" => "AnsiString",
+                "String" => "AnsiString",
                 "char" => "AnsiString",
                 "int" => "Int32",
                 "int?" => "Int32",
+                "Int32" => "Int32",
+                "Int32?" => "Int32",
                 "DateTime" => "DateTime",
                 "DateTime?" => "DateTime",
                 "DateTimeOffset" => "DateTimeOffset",
@@ -127,6 +129,8 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
                 "TimeSpan?" => "Time",
                 "decimal" => "Decimal",
                 "decimal?" => "Decimal",
+                "Decimal" => "Decimal",
+                "Decimal?" => "Decimal",
                 "bool" => "Boolean",
                 "bool?" => "Boolean",
                 "Guid" => "Guid",
@@ -164,11 +168,6 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

@@ -50,6 +50,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
             content.AppendLine($"using FluentValidation;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using BasePoint.Core.UnitOfWork;");
 
             var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
 
@@ -148,7 +149,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
-            content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(new UnitOfWorkResult(true, \"Commands Execute With Success\"));");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.Id.Value))");
             content.AppendLine($"\t\t\t\t.ReturnsAsync(previous{className});");

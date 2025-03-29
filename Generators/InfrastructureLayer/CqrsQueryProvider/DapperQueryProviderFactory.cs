@@ -116,12 +116,39 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsQueryProvider
             {
                 var separator = (propertyIndex != propertiesToGenerateSelectedFields.Count - 1) && (propertiesToGenerateSelectedFields.Count > 1) ? "," : string.Empty;
 
-                content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t t.{property.Name}" + separator);
+                if (property.IsSubClassOfBaseEntity)
+                {
+                    content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t t.{property.Name}Id" + separator + $" #select {property.Type} DB representation fields");
+                }
+                else
+                {
+                    content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t t.{property.Name}" + separator);
+                }
 
                 propertyIndex++;
             }
 
-            content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t FROM {originalClassName} t\";");
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
+
+            var fromSeparator = nestedProperties.Count() > 0 ? "" : "\";";
+
+            content.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t FROM {originalClassName} t{fromSeparator}");
+
+            var tableIndex = 1;
+
+            foreach (var property in nestedProperties)
+            {
+                if (tableIndex > 1)
+                    content.AppendLine();
+
+                content.Append($"\t\t\t\t\t\t\t\t\t\t\t INNER JOIN {property.Type} T{tableIndex} ON (T{tableIndex}.Id = t.{property.Name}Id)");
+                tableIndex++;
+            }
+
+            fromSeparator = nestedProperties.Count() > 0 ? "\";" : "";
+
+            content.AppendLine(fromSeparator);
+
             content.AppendLine();
         }
 
@@ -154,11 +181,6 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsQueryProvider
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

@@ -46,6 +46,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using BasePoint.Core.UnitOfWork;");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -100,7 +101,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine("");
 
             content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
-            content.AppendLine($"\t\t\t\t.ReturnsAsync(true);");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(new UnitOfWorkResult(true, \"Commands Execute With Success\"));");
             content.AppendLine("");
 
             content.AppendLine($"\t\t\t_{className.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(id))");

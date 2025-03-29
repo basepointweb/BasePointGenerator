@@ -2,7 +2,7 @@
   "profiles": {
     "BasePointGeneratorAssemblyAnalizer": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Elias\\source\\repos\\ModuleName1\\ModuleName1.Presentation.AspNetCoreApi\\bin\\Debug\\net8.0\\ModuleName1.Core.dll ModuleName1.Core.Domain.Entities.Person"
+      "commandLineArgs": "C:\\Users\\Elias\\source\\repos\\ModuleName1\\ModuleName1.Presentation.AspNetCoreApi\\bin\\Debug\\net8.0\\ModuleName1.Core.dll ModuleName1.Core.Domain.Entities.Company"
     }
   }
 }

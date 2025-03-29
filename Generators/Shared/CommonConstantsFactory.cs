@@ -96,7 +96,7 @@ namespace BasePointGenerator.Generators.Shared
                         newErrorMessages.AppendLine($"\t\t\tpublic static readonly string {constantName} = \"000;{originalClassName}Id is invalid.\";");
                 }
 
-                if (property.IsSubClassOfBaseEntity)
+                if ((options.GenerateCreateUseCase || options.GenerateUpdateUseCase) && property.IsSubClassOfBaseEntity)
                 {
                     constantName = $"{property.Type}WithIdDoesNotExists";
 

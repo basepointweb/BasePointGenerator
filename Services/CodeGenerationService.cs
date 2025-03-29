@@ -68,7 +68,8 @@ namespace BasePointGenerator.Services
             FileName = Path.GetFileName(originalFileFullPath);
             ClassName = FileName.Replace(":", "").Replace(".cs", "");
 
-            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate"));
+            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity
+            || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate" && p.Name != "CreationUser" && p.Name != "LastUpdateDate" && p.Name != "LastUpdateUser"));
 
             Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name, m.DeclaredInBaseEntity)).ToList();
             Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
@@ -80,7 +81,8 @@ namespace BasePointGenerator.Services
             OriginalFileContent = System.IO.File.ReadAllText(Path.Combine(OriginalFilePath, FileName));
             FileName = Path.GetFileName(FileName);
 
-            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate"));
+            var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity
+            || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate" && p.Name != "CreationUser" && p.Name != "LastUpdateDate" && p.Name != "LastUpdateUser"));
 
             Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.Name, m.DeclaredInBaseEntity)).ToList();
             Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();

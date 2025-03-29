@@ -88,7 +88,9 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
             {
                 if (item.IsSubClassOfBaseEntity)
                 {
-                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"new {item.Type}Output({originalClassName.GetWordWithFirstLetterDown()}.{item.Name});"));
+                    var objectProperty = $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name}";
+
+                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{objectProperty} is not null ? new {item.Type}Output({objectProperty}) : null;"));
                 }
                 else
                 {

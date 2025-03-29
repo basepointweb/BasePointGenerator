@@ -30,6 +30,49 @@ namespace SharedProject
 
             return ancestors;
         }
+        public static Type GetUnderlyingType(this Type type)
+        {
+            var underlyingType = Nullable.GetUnderlyingType(type);
+
+            return underlyingType ?? type;
+        }
+
+        public static string GetFriendlyTypeName(this Type type)
+        {
+            if (!type.IsGenericType)
+                return type.Name;
+
+            var typeName = type.Name;
+            var backtickIndex = typeName.IndexOf('`');
+            if (backtickIndex > 0)
+                typeName = typeName.Remove(backtickIndex);
+
+            var genericArgs = type.GetGenericArguments()
+                                  .Select(t => GetFriendlyTypeName(t))
+                                  .ToArray();
+
+            return $"{typeName}<{string.Join(", ", genericArgs)}>";
+        }
+
+        public static string GetFormattedType(this Type type)
+        {
+            var typeStr = type.Name;
+
+            if (type.Name.Contains("EntityList") || type.Name.Contains("List") || type.Name.Contains("Enumerable") || type.Name.Contains("Collection"))
+            {
+                typeStr = type.GetFriendlyTypeName();
+            }
+            else
+            {
+                var underlyingType = Nullable.GetUnderlyingType(type);
+
+                if (underlyingType is not null)
+                    typeStr = $"Nullable<{underlyingType.Name}>";
+            }
+
+            return typeStr;
+
+        }
 
         public static BasePointType ToBasePointType(
             this Type type,
@@ -45,7 +88,7 @@ namespace SharedProject
 
             var ancestors = type.GetAncestors();
 
-            var basePointType = new BasePointType { Name = type.Name, IsPrimitive = type.IsPrimitive(), IsSubClassOfBaseEntity = ancestors.Any(t => t.Name == "BaseEntity") };
+            var basePointType = new BasePointType { Name = type.GetFormattedType(), IsPrimitive = type.IsPrimitive(), IsSubClassOfBaseEntity = ancestors.Any(t => t.Name == "BaseEntity") };
 
             foreach (var property in properties)
             {
@@ -53,9 +96,9 @@ namespace SharedProject
 
                 var propertytypeAncestors = propType.GetAncestors();
 
-                var propertyType = new BasePointType { Name = propType.Name, IsPrimitive = propType.IsPrimitive(), IsSubClassOfBaseEntity = propertytypeAncestors.Any(t => t.Name == "BaseEntity") };
+                var propertyType = new BasePointType { Name = propType.GetFormattedType(), IsPrimitive = propType.IsPrimitive(), IsSubClassOfBaseEntity = propertytypeAncestors.Any(t => t.Name == "BaseEntity") };
 
-                basePointTypeInstances.TryGetValue(type.Name, out var instances);
+                basePointTypeInstances.TryGetValue(type.GetUnderlyingType().Name, out var instances);
 
                 if (!propType.IsPrimitive())
                 {
@@ -63,13 +106,13 @@ namespace SharedProject
                     {
                         instances = [propertyType];
 
-                        basePointTypeInstances.Add(type.Name, instances);
+                        basePointTypeInstances.Add(type.GetUnderlyingType().Name, instances);
 
                         propertyType = propType.ToBasePointType(basePointTypeInstances, ignoredProperties);
                     }
                 }
 
-                basePointType.AddPropertyIfNotExists(new BasePointProperty(property.Name, propertyType, property.DeclaringType.Name == "BaseEntity"));
+                basePointType.AddPropertyIfNotExists(new BasePointProperty(property.Name, propertyType, property.DeclaringType.GetUnderlyingType().Name == "BaseEntity"));
 
                 if (instances is not null)
                 {
@@ -86,7 +129,7 @@ namespace SharedProject
 
                 var methodTypeAncestors = returnType.GetAncestors();
 
-                var methodReturnType = new BasePointType { Name = returnType.Name, IsPrimitive = returnType.IsPrimitive(), IsSubClassOfBaseEntity = methodTypeAncestors.Any(t => t.Name == "BaseEntity") };
+                var methodReturnType = new BasePointType { Name = returnType.GetUnderlyingType().Name, IsPrimitive = returnType.IsPrimitive(), IsSubClassOfBaseEntity = methodTypeAncestors.Any(t => t.Name == "BaseEntity") };
 
                 basePointTypeInstances.TryGetValue(type.Name, out var instances);
 
@@ -96,13 +139,13 @@ namespace SharedProject
                     {
                         instances = [methodReturnType];
 
-                        basePointTypeInstances.Add(type.Name, instances);
+                        basePointTypeInstances.Add(type.GetUnderlyingType().Name, instances);
 
                         methodReturnType = returnType.ToBasePointType(basePointTypeInstances, ignoredProperties);
                     }
                 }
 
-                basePointType.AddMethodIfNotExists(new BasePointMethod(method.Name, method.IsSpecialName, method.DeclaringType.Name == "BaseEntity", methodReturnType));
+                basePointType.AddMethodIfNotExists(new BasePointMethod(method.Name, method.IsSpecialName, method.DeclaringType.GetUnderlyingType().Name == "BaseEntity", methodReturnType));
 
                 if (instances is not null)
                 {
