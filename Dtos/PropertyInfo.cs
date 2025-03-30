@@ -19,6 +19,7 @@ namespace BasePointGenerator.Dtos
         };
 
         public string Type { get; }
+        public string UnderlyingType { get; }
         public string Name { get; }
         public bool GenerateGetMethodOnRepository { get; set; }
         public bool PreventDuplication { get; set; }
@@ -45,10 +46,11 @@ namespace BasePointGenerator.Dtos
 
         public bool IsDecimalPlacesVisible { get; set; }
 
-        public PropertyInfo(string type, string name, bool isSubClassOfBaseEntity, bool declaredInBaseEntity)
+        public PropertyInfo(string type, string underlyingType, string name, bool isSubClassOfBaseEntity, bool declaredInBaseEntity)
         {
             Type = type;
             Name = name;
+            UnderlyingType = underlyingType;
             IsSubClassOfBaseEntity = isSubClassOfBaseEntity;
             DeclaredInBaseEntity = declaredInBaseEntity;
 

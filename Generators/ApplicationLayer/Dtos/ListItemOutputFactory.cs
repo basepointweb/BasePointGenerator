@@ -68,7 +68,7 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                if (item.Name.Equals("CreationDate"))
+                if (item.Name.Equals("CreationDate") || item.IsListProperty())
                     continue;
 
                 if (item.IsSubClassOfBaseEntity)

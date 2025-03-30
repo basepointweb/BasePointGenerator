@@ -149,7 +149,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\t_unitOfWork.Setup(x => x.SaveChangesAsync())");
-            content.AppendLine($"\t\t\t\t.ReturnsAsync(new UnitOfWorkResult(true, \"Commands Execute With Success\"));");
+            content.AppendLine($"\t\t\t\t.ReturnsAsync(new UnitOfWorkResult(true, \"Commands executed With success.\"));");
             content.AppendLine("");
 
             var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();

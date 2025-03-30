@@ -36,6 +36,10 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Builders
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+
+            if (properties.Any(p => p.IsListProperty()))
+                content.AppendLine($"using BasePoint.Core.Domain.Entities.Interfaces;");
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

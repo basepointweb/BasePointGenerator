@@ -157,7 +157,21 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 }
                 else
                 {
-                    content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"input.{item.Name};"));
+                    if (item.IsListProperty())
+                    {
+                        content.AppendLine($"\t\t\t// Consider to create a method 'Remove{item.UnderlyingType}' in {className} class. You can use RemoveWhereNotIn from IEntityList or other ways to remove");
+                        content.AppendLine($"\t\t\tprevious{className}.{item.Name.ToPlural()}.RemoveWhereNotIn(a => a.Property, input.{item.Name.ToPlural()}.Select(a => a.Property));");
+
+                        content.AppendLine($"\t\t\t// Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly, creating a builder class if necessary");
+                        content.AppendLine($"\t\t\tinput.{item.UnderlyingType.ToPlural()}.ForEach(x => previous{className}.Add{item.UnderlyingType}(new {item.UnderlyingType}()");
+                        content.AppendLine("\t\t\t{");
+                        content.AppendLine($"\t\t\t\t// Set {item.UnderlyingType} properties");
+                        content.AppendLine("\t\t\t}));");
+                    }
+                    else
+                    {
+                        content.AppendLine(string.Concat($"\t\t\tprevious{className}.{item.Name} = ", $"input.{item.Name};"));
+                    }
                 }
             }
 

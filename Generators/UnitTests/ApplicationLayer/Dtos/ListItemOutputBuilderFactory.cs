@@ -36,6 +36,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -80,12 +81,12 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false, true));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Guid", "Id", false, true));
             }
 
             for (int i = 0; i < propertiesToAdd.Count; i++)
             {
-                if (propertiesToAdd[i].Name.Equals("CreationDate"))
+                if (propertiesToAdd[i].Name.Equals("CreationDate") || propertiesToAdd[i].IsListProperty())
                     continue;
 
                 var idSuffix = propertiesToAdd[i].IsSubClassOfBaseEntity ? "Id" : "";
@@ -111,7 +112,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
             {
                 var idSuffix = property.IsSubClassOfBaseEntity ? "Id" : "";
 
-                if (property.Name.Equals("CreationDate"))
+                if (property.Name.Equals("CreationDate") || property.IsListProperty())
                     continue;
 
                 var propertyType = property.IsSubClassOfBaseEntity ? "Guid" : property.Type;
@@ -137,6 +138,9 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
+                if (item.IsListProperty())
+                    continue;
+
                 if (item.IsSubClassOfBaseEntity)
                 {
                     content.AppendLine($"\t\tpublic {className} With{item.Name}Id(Guid {item.Name.GetWordWithFirstLetterDown()}Id)");
@@ -168,6 +172,9 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
+                if (item.IsListProperty())
+                    continue;
+
                 if (item.IsSubClassOfBaseEntity)
                 {
                     content.AppendLine($"\t\tprivate Guid _{item.Name.GetWordWithFirstLetterDown()}Id;");
@@ -209,11 +216,6 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
             var solution = VS.Solutions.GetCurrentSolutionAsync().Result;
 
             return solution.Name.Replace(".sln", "");
-        }
-
-        private static string GetUsings(string fileContent)
-        {
-            return fileContent.Substring(0, fileContent.IndexOf("namespace"));
         }
 
         private static string GetOriginalClassName(string fileContent)

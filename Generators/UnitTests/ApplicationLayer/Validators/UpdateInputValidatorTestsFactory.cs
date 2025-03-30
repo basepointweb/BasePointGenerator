@@ -95,7 +95,6 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
             content.AppendLine($"\t\t\t\t.Build();");
             content.AppendLine("");
             content.AppendLine($"\t\t\tvar validationResult = _validator.Validate(input);");
-            content.AppendLine($"\t\t\tvalidationResult.Errors.Should().ContainEquivalentOf(ValidationFailureBuilder.Build(SharedConstants.ErrorMessages.{className}{firstProperty.Name}IsInvalid));");
             content.AppendLine("");
             content.AppendLine("\t\t\tvalidationResult.IsValid.Should().BeTrue();");
             content.AppendLine("\t\t}");
@@ -106,7 +105,7 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Validators
 
             if (!propertiesToAdd.Any(p => p.Name.Equals("Id")))
             {
-                propertiesToAdd.Add(new PropertyInfo("Guid", "Id", false, true));
+                propertiesToAdd.Add(new PropertyInfo("Guid", "Guid", "Id", false, true));
             }
 
             int methodsAdded = 0;

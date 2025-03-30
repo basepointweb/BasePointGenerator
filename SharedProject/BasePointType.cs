@@ -6,6 +6,8 @@ namespace SharedProject
     public class BasePointType
     {
         public string Name { get; set; }
+        public string UnderlyingType { get; set; }
+        public string Namespace { get; set; }
         public bool IsPrimitive { get; set; }
         public bool IsSubClassOfBaseEntity { get; set; }
 
@@ -15,6 +17,8 @@ namespace SharedProject
         public BasePointType()
         {
             Name = string.Empty;
+            UnderlyingType = string.Empty;
+            Namespace = string.Empty;
             Properties = new List<BasePointProperty>();
             Methods = new List<BasePointMethod>();
         }
@@ -22,6 +26,8 @@ namespace SharedProject
         public BasePointType(BasePointType other)
         {
             Name = other.Name;
+            UnderlyingType = other.Name;
+            Namespace = other.Namespace;
             IsPrimitive = other.IsPrimitive;
             IsSubClassOfBaseEntity = other.IsSubClassOfBaseEntity;
             Properties = new List<BasePointProperty>(other.Properties);
