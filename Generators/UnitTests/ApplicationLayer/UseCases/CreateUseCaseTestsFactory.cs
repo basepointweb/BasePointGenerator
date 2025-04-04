@@ -66,6 +66,21 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
                     content.AppendLine(namespaceUsing);
             }
 
+            var entityListProperties = properties.Where(p => p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in entityListProperties)
+            {
+                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{property.UnderlyingType.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+
+                namespaceUsing = $"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders.{property.UnderlyingType.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -115,6 +130,16 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
                     content.AppendLine($"\t\t\t_{repositoryVar}");
             }
 
+            var entityListProperties = properties.Where(p => p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity).ToList();
+
+            foreach (var property in entityListProperties)
+            {
+                var repositoryVar = $"{property.UnderlyingType.GetWordWithFirstLetterDown()}Repository = new Mock<I{property.UnderlyingType}Repository>();";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t_{repositoryVar}");
+            }
+
             content.AppendLine();
             content.AppendLine($"\t\t\t_useCase = new Create{originalClassName}UseCase(");
             content.AppendLine($"\t\t\t\t_validator.Object,");
@@ -123,6 +148,14 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             foreach (var property in nestedProperties)
             {
                 var repositoryVar = $"{property.Type.GetWordWithFirstLetterDown()}Repository.Object,";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\t\t_{repositoryVar}");
+            }
+
+            foreach (var property in entityListProperties)
+            {
+                var repositoryVar = $"{property.UnderlyingType.GetWordWithFirstLetterDown()}Repository.Object,";
 
                 if (!content.ToString().Contains(repositoryVar))
                     content.AppendLine($"\t\t\t\t_{repositoryVar}");
@@ -166,6 +199,26 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
                 content.AppendLine();
                 content.AppendLine($"\t\t\t_{property.Type.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(input.{property.Name}Id))");
                 content.AppendLine($"\t\t\t\t.ReturnsAsync({property.Type.GetWordWithFirstLetterDown()});");
+
+                testsMethodsAdded++;
+
+                content.AppendLine();
+            }
+
+            var entityListProperties = properties.Where(p => p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity).ToList();
+
+            testsMethodsAdded = 0;
+
+            foreach (var property in entityListProperties)
+            {
+                if (testsMethodsAdded > 0)
+                    content.AppendLine();
+
+                content.AppendLine($"\t\t\tvar {property.UnderlyingType.GetWordWithFirstLetterDown()} = new {property.UnderlyingType}Builder()");
+                content.AppendLine($"\t\t\t\t.Build();");
+                content.AppendLine();
+                content.AppendLine($"\t\t\t_{property.UnderlyingType.GetWordWithFirstLetterDown()}Repository.Setup(x => x.GetById(It.IsAny<Guid>()))");
+                content.AppendLine($"\t\t\t\t.ReturnsAsync({property.UnderlyingType.GetWordWithFirstLetterDown()});");
 
                 testsMethodsAdded++;
 
@@ -237,6 +290,16 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.UseCases
             foreach (var property in nestedProperties)
             {
                 var repositoryVar = $"I{property.Type}Repository> _{property.Type.GetWordWithFirstLetterDown()}Repository;";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\tprivate readonly Mock<{repositoryVar}");
+            }
+
+            var entityListProperties = properties.Where(p => (p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity)).ToList();
+
+            foreach (var property in entityListProperties)
+            {
+                var repositoryVar = $"I{property.UnderlyingType}Repository> _{property.UnderlyingType.GetWordWithFirstLetterDown()}Repository;";
 
                 if (!content.ToString().Contains(repositoryVar))
                     content.AppendLine($"\t\tprivate readonly Mock<{repositoryVar}");

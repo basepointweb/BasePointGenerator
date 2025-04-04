@@ -206,7 +206,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsCommandProvider
 
             var propertiesToGenerateSelectedFields = new List<PropertyInfo>
             {
-                new PropertyInfo("Guid", "Guid", "Id", false, true)
+                new PropertyInfo("Guid", "Guid", "Id", false, false, true)
             };
 
             propertiesToGenerateSelectedFields.AddRange(properties);

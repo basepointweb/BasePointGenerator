@@ -71,8 +71,8 @@ namespace BasePointGenerator.Services
             var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity
             || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate" && p.Name != "CreationUser" && p.Name != "LastUpdateDate" && p.Name != "LastUpdateUser"));
 
-            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.ReturnType.UnderlyingType, m.Name, m.DeclaredInBaseEntity)).ToList();
-            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Type.UnderlyingType, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.ReturnType.UnderlyingType, m.ReturnType.UnderlyingTypeIsSubClassOfBaseEntity, m.Name, m.DeclaredInBaseEntity)).ToList();
+            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Type.UnderlyingType, p.Name, p.Type.IsSubClassOfBaseEntity, p.Type.UnderlyingTypeIsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
             GeneratedFiles = [];
         }
 
@@ -84,8 +84,8 @@ namespace BasePointGenerator.Services
             var properties = type.Properties.Where(p => !p.DeclaredInBaseEntity
             || (p.DeclaredInBaseEntity && p.Name != "Id" && p.Name != "CreationDate" && p.Name != "CreationUser" && p.Name != "LastUpdateDate" && p.Name != "LastUpdateUser"));
 
-            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.ReturnType.UnderlyingType, m.Name, m.DeclaredInBaseEntity)).ToList();
-            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Type.UnderlyingType, p.Name, p.Type.IsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
+            Methods = type.Methods.Where(m => !m.IsAcessor).Select(m => new MethodInfo(m.ReturnType.Name, m.ReturnType.UnderlyingType, m.ReturnType.UnderlyingTypeIsSubClassOfBaseEntity, m.Name, m.DeclaredInBaseEntity)).ToList();
+            Properties = properties.Select(p => new PropertyInfo(p.Type.Name, p.Type.UnderlyingType, p.Name, p.Type.IsSubClassOfBaseEntity, p.Type.UnderlyingTypeIsSubClassOfBaseEntity, p.DeclaredInBaseEntity)).ToList();
         }
 
         public void GenerateFiles(

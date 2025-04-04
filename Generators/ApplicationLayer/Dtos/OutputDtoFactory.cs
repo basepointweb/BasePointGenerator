@@ -34,11 +34,25 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
 
-            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity || p.UnderlyingTypeIsSubClassOfBaseEntity);
 
             foreach (var property in nestedProperties)
             {
-                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{property.Type.ToPlural()};";
+                var namespaceUsing = string.Empty;
+
+                if (property.IsListProperty() && property.UnderlyingTypeIsSubClassOfBaseEntity)
+                {
+                    namespaceUsing = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{property.UnderlyingType.ToPlural()};";
+
+                    var namespaceExtensions = "using BasePoint.Core.Extensions;";
+
+                    if (!content.ToString().Contains(namespaceExtensions))
+                        content.AppendLine(namespaceExtensions);
+                }
+                else
+                {
+                    namespaceUsing = $"using {GetNameRootProjectName()}.Core.Application.Dtos.{property.Type.ToPlural()};";
+                }
 
                 if (!content.ToString().Contains(namespaceUsing))
                     content.AppendLine(namespaceUsing);
@@ -86,17 +100,26 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             foreach (var item in properties)
             {
-                if (item.IsSubClassOfBaseEntity)
+                if (item.IsListProperty() && item.UnderlyingTypeIsSubClassOfBaseEntity)
                 {
                     var objectProperty = $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name}";
 
-                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{objectProperty} is not null ? new {item.Type}Output({objectProperty}) : null;"));
+                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name}.SafeSelect(x => new {item.UnderlyingType}Output(x)).ToList();"));
+
                 }
                 else
                 {
-                    content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name};"));
-                }
+                    if (item.IsSubClassOfBaseEntity)
+                    {
+                        var objectProperty = $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name}";
 
+                        content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{objectProperty} is not null ? new {item.Type}Output({objectProperty}) : null;"));
+                    }
+                    else
+                    {
+                        content.AppendLine(string.Concat($"\t\t\t{item.Name} = ", $"{originalClassName.GetWordWithFirstLetterDown()}.{item.Name};"));
+                    }
+                }
             }
 
             content.AppendLine("\t\t}");

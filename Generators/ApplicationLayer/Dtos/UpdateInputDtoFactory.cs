@@ -78,20 +78,26 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
                 if (item.Name.Equals("CreationDate"))
                     continue;
 
-
-                if (item.IsSubClassOfBaseEntity)
+                if (item.IsListProperty() && item.UnderlyingTypeIsSubClassOfBaseEntity)
                 {
-                    content.AppendLine(string.Concat($"\t\tpublic Guid {item.Name}Id", " { get; init; }"));
+                    content.AppendLine(string.Concat($"\t\tpublic IEnumerable<Guid> {item.Name.ToPlural()}", " { get; init; }"));
                 }
                 else
                 {
-                    if (item.Name.Equals("Id"))
+                    if (item.IsSubClassOfBaseEntity)
                     {
-                        content.AppendLine("\t\t[JsonIgnore]");
-                        nullableSuffix = "?";
+                        content.AppendLine(string.Concat($"\t\tpublic Guid {item.Name}Id", " { get; init; }"));
                     }
+                    else
+                    {
+                        if (item.Name.Equals("Id"))
+                        {
+                            content.AppendLine("\t\t[JsonIgnore]");
+                            nullableSuffix = "?";
+                        }
 
-                    content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Update", "Input")}{nullableSuffix} {item.Name}", " { get; set; }"));
+                        content.AppendLine(string.Concat($"\t\tpublic {item.GetTypeConvertingToDtoWhenIsComplex("Update", "Input")}{nullableSuffix} {item.Name}", " { get; set; }"));
+                    }
                 }
             }
         }

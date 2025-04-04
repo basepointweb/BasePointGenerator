@@ -7,6 +7,7 @@ namespace SharedProject
     {
         public string Name { get; set; }
         public string UnderlyingType { get; set; }
+        public bool UnderlyingTypeIsSubClassOfBaseEntity { get; set; }
         public string Namespace { get; set; }
         public bool IsPrimitive { get; set; }
         public bool IsSubClassOfBaseEntity { get; set; }
@@ -18,6 +19,7 @@ namespace SharedProject
         {
             Name = string.Empty;
             UnderlyingType = string.Empty;
+            UnderlyingTypeIsSubClassOfBaseEntity = false;
             Namespace = string.Empty;
             Properties = new List<BasePointProperty>();
             Methods = new List<BasePointMethod>();
@@ -27,6 +29,7 @@ namespace SharedProject
         {
             Name = other.Name;
             UnderlyingType = other.Name;
+            UnderlyingTypeIsSubClassOfBaseEntity = other.UnderlyingTypeIsSubClassOfBaseEntity;
             Namespace = other.Namespace;
             IsPrimitive = other.IsPrimitive;
             IsSubClassOfBaseEntity = other.IsSubClassOfBaseEntity;

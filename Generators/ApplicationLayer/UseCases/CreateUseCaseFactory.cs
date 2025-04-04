@@ -53,6 +53,16 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                     content.AppendLine(namespaceUsing);
             }
 
+            var entityListProperties = properties.Where(p => (p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity));
+
+            foreach (var property in entityListProperties)
+            {
+                var namespaceUsing = $"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{property.UnderlyingType.ToPlural()};";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -90,7 +100,7 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
             content.AppendLine($"\t\t\tIValidator<Create{originalClassName}Input> validator,");
             content.AppendLine($"\t\t\tI{originalClassName}Repository {originalClassName.GetWordWithFirstLetterDown()}Repository,");
 
-            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity).ToList();
+            var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
 
             foreach (var property in nestedProperties)
             {
@@ -98,6 +108,16 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
                 if (!content.ToString().Contains(repositoryVar))
                     content.AppendLine($"\t\t\tI{property.Type}Repository {property.Type.GetWordWithFirstLetterDown()}Repository,");
+            }
+
+            var entityListProperties = properties.Where(p => (p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity)).ToList();
+
+            foreach (var property in entityListProperties)
+            {
+                var repositoryVar = $"I{property.UnderlyingType}Repository {property.UnderlyingType.GetWordWithFirstLetterDown()}Repository,";
+
+                if (!content.ToString().Contains(repositoryVar))
+                    content.AppendLine($"\t\t\tI{property.UnderlyingType}Repository {property.UnderlyingType.GetWordWithFirstLetterDown()}Repository,");
             }
 
             content.AppendLine($"\t\t\tIUnitOfWork unitOfWork) : base(unitOfWork)");
@@ -143,6 +163,17 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 content.AppendLine("");
             }
 
+            var entityListProperties = properties.Where(x => x.IsListProperty() && x.UnderlyingTypeIsSubClassOfBaseEntity);
+
+            foreach (var entityListProperty in entityListProperties)
+            {
+                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()}Task = input.{entityListProperty.UnderlyingType.ToPlural()}.SafeSelect(x => _{entityListProperty.UnderlyingType.GetWordWithFirstLetterDown()}Repository.GetById(x));");
+
+                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()} = await Task.WhenAll(selected{entityListProperty.UnderlyingType.ToPlural()}Task);");
+
+                content.AppendLine();
+            }
+
             content.AppendLine($"\t\t\tvar {className.GetWordWithFirstLetterDown()} = new {className}();");
             content.AppendLine("");
 
@@ -151,19 +182,16 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 if (item.Name.Equals("Id") || item.Name.Equals("CreationDate"))
                     continue;
 
-                if (item.IsSubClassOfBaseEntity)
+                if (item.IsListProperty() && item.UnderlyingTypeIsSubClassOfBaseEntity)
                 {
-                    content.AppendLine(string.Concat($"\t\t\t{className.GetWordWithFirstLetterDown()}.{item.Name} = ", $"selected{item.Name};"));
+                    content.AppendLine($"\t\t\t// Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly, creating a builder class if necessary");
+                    content.AppendLine(string.Concat($"\t\t\tselected{item.UnderlyingType.ToPlural()}.ForEach(x => {className.GetWordWithFirstLetterDown()}.Add{item.UnderlyingType}(x));"));
                 }
                 else
                 {
-                    if (item.IsListProperty())
+                    if (item.IsSubClassOfBaseEntity)
                     {
-                        content.AppendLine($"\t\t\t// Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly, creating a builder class if necessary");
-                        content.AppendLine($"\t\t\tinput.{item.UnderlyingType.ToPlural()}.ForEach(x => {className.GetWordWithFirstLetterDown()}.Add{item.UnderlyingType}(new {item.UnderlyingType}()");
-                        content.AppendLine("\t\t\t{");
-                        content.AppendLine($"\t\t\t\t// Set {item.Type} properties");
-                        content.AppendLine("\t\t\t}));");
+                        content.AppendLine(string.Concat($"\t\t\t{className.GetWordWithFirstLetterDown()}.{item.Name} = ", $"selected{item.Name};"));
                     }
                     else
                     {
@@ -197,6 +225,16 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
                 if (!content.ToString().Contains(repositoryClassName))
                     content.AppendLine($"\t\tprivate readonly {repositoryClassName} _{property.Type.GetWordWithFirstLetterDown()}Repository;");
+            }
+
+            var entityListProperties = properties.Where(p => (p.IsListProperty() && p.UnderlyingTypeIsSubClassOfBaseEntity)).ToList();
+
+            foreach (var property in entityListProperties)
+            {
+                var repositoryClassName = $"I{property.UnderlyingType}Repository";
+
+                if (!content.ToString().Contains(repositoryClassName))
+                    content.AppendLine($"\t\tprivate readonly {repositoryClassName} _{property.UnderlyingType.GetWordWithFirstLetterDown()}Repository;");
             }
 
             content.AppendLine($"");
