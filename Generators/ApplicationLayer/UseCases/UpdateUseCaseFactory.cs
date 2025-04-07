@@ -63,6 +63,14 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                     content.AppendLine(namespaceUsing);
             }
 
+            if (entityListProperties.Any())
+            {
+                var namespaceUsing = $"using BasePoint.Core.Exceptions;";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -170,10 +178,10 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             foreach (var entityListProperty in entityListProperties)
             {
+                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()} = await _{entityListProperty.UnderlyingType.GetWordWithFirstLetterDown()}Repository.FetchByIds(input.{entityListProperty.UnderlyingType.ToPlural()});");
 
-                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()}Task = input.{entityListProperty.UnderlyingType.ToPlural()}.SafeSelect(x => _{entityListProperty.UnderlyingType.GetWordWithFirstLetterDown()}Repository.GetById(x));");
+                content.AppendLine($"\t\t\tResourceNotFoundException.ThrowIf(selected{entityListProperty.UnderlyingType.ToPlural()}.Any(x => x.Entity is null), SharedConstants.ErrorMessages.{entityListProperty.UnderlyingType}WithIdDoesNotExists);");
 
-                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()} = await Task.WhenAll(selected{entityListProperty.UnderlyingType.ToPlural()}Task);");
                 content.AppendLine();
             }
 
@@ -185,11 +193,19 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                 if (item.IsListProperty() && item.UnderlyingTypeIsSubClassOfBaseEntity)
                 {
                     content.AppendLine();
-
-                    content.AppendLine($"\t\t\tprevious{className}.{item.Name.ToPlural()}.RemoveWhereNotIn(a => a.Id, input.{item.Name.ToPlural()});");
-
-                    content.AppendLine($"\t\t\t// Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly, creating a builder class if necessary");
-                    content.AppendLine(string.Concat($"\t\t\tselected{item.UnderlyingType.ToPlural()}.ForEach(x => previous{className}.Add{item.UnderlyingType}(x));"));
+                    content.AppendLine($"\t\t\t/* Consider to create a method 'Equalize{item.UnderlyingType.ToPlural()}' in {className} class to validate items that can be removed, added and updated.");
+                    content.AppendLine($"\t\t\t   If everything is Ok to go, you can use using the 'Equalize' method from EntityList that do all job for you!");
+                    content.AppendLine($"\t\t\t   Ensure that the aggregate root is used to validate operations.*/");
+                    content.AppendLine($"\t\t\tprevious{className}.Equalize{item.UnderlyingType.ToPlural()}(selected{item.UnderlyingType.ToPlural()}.SafeSelect(x => x.Entity));");
+                    content.AppendLine();
+                    content.AppendLine($"\t\t\t/* If the items have properties that exists only in the relationship with {className}, you must update each item accordingly with data from imput.*/");
+                    content.AppendLine($"\t\t\tforeach (var {item.UnderlyingType.GetWordWithFirstLetterDown()} in input.{item.UnderlyingType.ToPlural()})");
+                    content.AppendLine($"\t\t\t{{");
+                    content.AppendLine($"\t\t\t\tvar {className.GetWordWithFirstLetterDown()}{item.UnderlyingType} = previous{className}.{item.UnderlyingType.ToPlural()}.FirstOrDefault(x => x.Id == {item.UnderlyingType.GetWordWithFirstLetterDown()}.Id);");
+                    content.AppendLine();
+                    content.AppendLine($"\t\t\t\tif ({className.GetWordWithFirstLetterDown()}{item.UnderlyingType} is not null)");
+                    content.AppendLine($"\t\t\t\t\t{className.GetWordWithFirstLetterDown()}{item.UnderlyingType}.Property = {item.UnderlyingType.GetWordWithFirstLetterDown()}.Property;");
+                    content.AppendLine($"\t\t\t}}");
                 }
                 else
                 {

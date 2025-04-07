@@ -63,6 +63,14 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
                     content.AppendLine(namespaceUsing);
             }
 
+            if (entityListProperties.Any())
+            {
+                var namespaceUsing = $"using BasePoint.Core.Exceptions;";
+
+                if (!content.ToString().Contains(namespaceUsing))
+                    content.AppendLine(namespaceUsing);
+            }
+
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 
@@ -167,9 +175,9 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             foreach (var entityListProperty in entityListProperties)
             {
-                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()}Task = input.{entityListProperty.UnderlyingType.ToPlural()}.SafeSelect(x => _{entityListProperty.UnderlyingType.GetWordWithFirstLetterDown()}Repository.GetById(x));");
+                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()} = await _{entityListProperty.UnderlyingType.GetWordWithFirstLetterDown()}Repository.FetchByIds(input.{entityListProperty.UnderlyingType.ToPlural()});");
 
-                content.AppendLine($"\t\t\tvar selected{entityListProperty.UnderlyingType.ToPlural()} = await Task.WhenAll(selected{entityListProperty.UnderlyingType.ToPlural()}Task);");
+                content.AppendLine($"\t\t\tResourceNotFoundException.ThrowIf(selected{entityListProperty.UnderlyingType.ToPlural()}.Any(x => x.Entity is null), SharedConstants.ErrorMessages.{entityListProperty.UnderlyingType}WithIdDoesNotExists);");
 
                 content.AppendLine();
             }
@@ -184,8 +192,9 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
                 if (item.IsListProperty() && item.UnderlyingTypeIsSubClassOfBaseEntity)
                 {
-                    content.AppendLine($"\t\t\t// Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly, creating a builder class if necessary");
-                    content.AppendLine(string.Concat($"\t\t\tselected{item.UnderlyingType.ToPlural()}.ForEach(x => {className.GetWordWithFirstLetterDown()}.Add{item.UnderlyingType}(x));"));
+                    content.AppendLine($"\t\t\t/* Consider to create a method 'Add{item.UnderlyingType}' in {className} class and instanstiate items properly");
+                    content.AppendLine($"\t\t\t   Ensure that the aggregate root is used to validate operations.*/");
+                    content.AppendLine(string.Concat($"\t\t\tselected{item.UnderlyingType.ToPlural()}.ForEach(x => {className.GetWordWithFirstLetterDown()}.Add{item.UnderlyingType}(x.Entity));"));
                 }
                 else
                 {
