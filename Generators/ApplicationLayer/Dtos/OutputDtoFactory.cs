@@ -25,14 +25,14 @@ namespace BasePointGenerator.Generators.ApplicationLayer.Dtos
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateRepositoryClass(fileContent, originalClassName, classProperties, options, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, FileContentGenerationOptions options, string filePath)
         {
             var content = new StringBuilder();
 
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
 
             var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity || p.UnderlyingTypeIsSubClassOfBaseEntity);
 

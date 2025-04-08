@@ -47,6 +47,7 @@ namespace BasePointGenerator.Services
         public string OriginalFileContent { get; protected set; }
         public string FileName { get; protected set; }
         public string ClassName { get; protected set; }
+        public string Namespace { get; protected set; }
         public IList<MethodInfo> Methods { get; protected set; }
         public IList<PropertyInfo> Properties { get; protected set; }
         public IList<string> GeneratedFiles { get; protected set; }
@@ -89,6 +90,7 @@ namespace BasePointGenerator.Services
         }
 
         public void GenerateFiles(
+            string entityNamespace,
             bool generateCreateUseCase,
             bool generateUpdateUseCase,
             bool generateDeleteUseCase,
@@ -101,7 +103,8 @@ namespace BasePointGenerator.Services
                 GenerateUpdateUseCase = generateUpdateUseCase,
                 GenerateDeleteUseCase = generateDeleteUseCase,
                 GenerateGetUseCase = generateGetUseCase,
-                OnlyProcessFilePaths = onlyProcessFilePaths
+                OnlyProcessFilePaths = onlyProcessFilePaths,
+                EntityNamespace = entityNamespace
             };
 
             GeneratedFiles.Clear();

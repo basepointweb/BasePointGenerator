@@ -25,10 +25,10 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsCommandProvider
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateRepositoryClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -40,7 +40,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.CqrsCommandProvider
             content.AppendLine("using BasePoint.Core.Domain.Cqrs;");
             content.AppendLine("using Dapper;");
             content.AppendLine("using System.Data;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Cqrs.Dapper.EntityCommands.{originalClassName.ToPlural()};");
 

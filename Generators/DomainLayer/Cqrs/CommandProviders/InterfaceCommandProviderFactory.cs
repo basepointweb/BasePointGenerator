@@ -25,17 +25,17 @@ namespace BasePointGenerator.Generators.DomainLayer.Cqrs.CommandProviders
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateCommandProviderInterface(fileContent, originalClassName, classProperties, filePath);
+            return CreateCommandProviderInterface(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateCommandProviderInterface(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateCommandProviderInterface(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using BasePoint.Core.Domain.Cqrs.CommandProviders;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

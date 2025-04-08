@@ -26,16 +26,16 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Builders
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateBuilderClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateBuilderClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateBuilderClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateBuilderClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
 
             if (properties.Any(p => p.IsListProperty()))
                 content.AppendLine($"using BasePoint.Core.Domain.Entities.Interfaces;");

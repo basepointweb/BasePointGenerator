@@ -110,6 +110,7 @@ namespace BasePointGenerator
         private async Task GenerateAsync(bool onlyProcessFilePaths)
         {
             CodeGenerationService.GenerateFiles(
+                BasePointTypeService.GetNameSpace(),
                 generateCreateUseCase: SEL_GenerateCreateUseCase.IsChecked.Value,
                 generateUpdateUseCase: SEL_GenerateUpdateUseCase.IsChecked.Value,
                 generateDeleteUseCase: SEL_GenerateDeleteUseCase.IsChecked.Value,

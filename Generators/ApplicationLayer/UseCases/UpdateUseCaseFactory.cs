@@ -25,10 +25,10 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateUseCaseClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateUseCaseClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateUseCaseClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -41,7 +41,7 @@ namespace BasePointGenerator.Generators.ApplicationLayer.UseCases
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Shared;");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
 
             var nestedProperties = properties.Where(p => p.IsSubClassOfBaseEntity);
 

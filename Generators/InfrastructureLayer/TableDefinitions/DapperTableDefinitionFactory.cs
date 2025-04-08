@@ -25,10 +25,10 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateRepositoryClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
@@ -36,7 +36,7 @@ namespace BasePointGenerator.Generators.InfrastructureLayer.TableDefinitions
 
             content.AppendLine("using BasePoint.Core.Cqrs.Dapper.TableDefinitions;");
             content.AppendLine("using System.Data;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

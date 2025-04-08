@@ -25,17 +25,17 @@ namespace BasePointGenerator.Generators.UnitTests.ApplicationLayer.Dtos
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateBuilderClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateBuilderClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateBuilderClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateBuilderClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Application.Dtos.{originalClassName.ToPlural()};");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Tests.Domain.Entities.Builders.{originalClassName.ToPlural()};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));

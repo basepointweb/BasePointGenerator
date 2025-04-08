@@ -25,17 +25,17 @@ namespace BasePointGenerator.Generators.DomainLayer.Repositories
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryClass(fileContent, originalClassName, classProperties, filePath);
+            return CreateRepositoryClass(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using BasePoint.Core.Domain.Repositories;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Repositories.Interfaces.{originalClassName.ToPlural()};");
             content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Cqrs.CommandProviders.{originalClassName.ToPlural()};");
             content.AppendLine("");

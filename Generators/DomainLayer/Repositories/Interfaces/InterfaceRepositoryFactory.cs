@@ -25,17 +25,17 @@ namespace BasePointGenerator.Generators.DomainLayer.Repositories.Interfaces
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateRepositoryInterface(fileContent, originalClassName, classProperties, filePath);
+            return CreateRepositoryInterface(fileContent, options, originalClassName, classProperties, filePath);
         }
 
-        private static string CreateRepositoryInterface(string fileContent, string originalClassName, IList<PropertyInfo> properties, string filePath)
+        private static string CreateRepositoryInterface(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, string filePath)
         {
             var content = new StringBuilder();
 
             fileContent = fileContent.Substring(content.Length);
 
             content.AppendLine("using BasePoint.Core.Domain.Repositories.Interfaces;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
 

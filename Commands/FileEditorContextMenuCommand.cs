@@ -45,8 +45,9 @@ namespace BasePointGenerator
             var frm = ((frmCodeGenerationOptionsControl)window.Content);
 
             var basePointTypeService = new Services.BasePointTypeService(_dte);
+            var fileName = GetSelectedFileName();
 
-            var type = basePointTypeService.GetBasePointType(GetSelectedFileName());
+            var type = basePointTypeService.GetBasePointType(fileName);
 
             frm.BasePointTypeService = basePointTypeService;
 

@@ -7,5 +7,6 @@
         public bool GenerateUpdateUseCase { get; set; }
         public bool GenerateDeleteUseCase { get; set; }
         public bool GenerateGetUseCase { get; set; }
+        public string EntityNamespace { get; set; }
     }
 }

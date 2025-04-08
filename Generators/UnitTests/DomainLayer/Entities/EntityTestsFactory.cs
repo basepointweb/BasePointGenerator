@@ -25,10 +25,10 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Entities
 
             var originalClassName = GetOriginalClassName(fileContent);
 
-            return CreateUseCaseTestsClass(fileContent, originalClassName, classProperties, methods, filePath);
+            return CreateUseCaseTestsClass(fileContent, options, originalClassName, classProperties, methods, filePath);
         }
 
-        private static string CreateUseCaseTestsClass(string fileContent, string originalClassName, IList<PropertyInfo> properties, IList<MethodInfo> methods, string filePath)
+        private static string CreateUseCaseTestsClass(string fileContent, FileContentGenerationOptions options, string originalClassName, IList<PropertyInfo> properties, IList<MethodInfo> methods, string filePath)
         {
             var content = new StringBuilder();
 
@@ -39,7 +39,7 @@ namespace BasePointGenerator.Generators.UnitTests.DomainLayer.Entities
             content.AppendLine("using FluentAssertions;");
             content.AppendLine("using Moq;");
             content.AppendLine("using Xunit;");
-            content.AppendLine($"using {GetNameRootProjectName()}.Core.Domain.Entities;");
+            content.AppendLine($"using {options.EntityNamespace};");
 
             content.AppendLine("");
             content.AppendLine(GetNameSpace(filePath));
