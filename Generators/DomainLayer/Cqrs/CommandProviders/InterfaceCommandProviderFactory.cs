@@ -82,13 +82,10 @@ namespace BasePointGenerator.Generators.DomainLayer.Cqrs.CommandProviders
             {
                 content.AppendLine($"\t\tTask<{className}> Get{className}By{property.Name}({property.Type} {property.Name.GetWordWithFirstLetterDown()});");
             }
-        }
 
-        private static void GeneratePrivateVariables(StringBuilder content, IList<PropertyInfo> properties)
-        {
-            foreach (var item in properties)
+            if (!propertiesToCreateGetMethod.Any() && !propertiesToPreventDuplication.Any())
             {
-                content.AppendLine($"\t\tprivate {item.Type} _{item.Name.GetWordWithFirstLetterDown()};");
+                content.AppendLine($"\t\t /*Please check if you need any get methods here.\r\nIf you don't need any methods, maybe this interface can be removed and you can use only its implementation.*\\");
             }
         }
 
